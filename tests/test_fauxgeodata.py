@@ -13,7 +13,7 @@ import unittest
 from fauxgeodata import fauxgeodata
 
 
-class TestHelloworldproj(unittest.TestCase):
+class TestFauxgeodata(unittest.TestCase):
 
     def setUp(self):
         pass
