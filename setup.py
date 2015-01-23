@@ -22,7 +22,7 @@ test_requirements = [
 setup(
     name='fauxgeodata',
     version='0.1.0',
-    description='A python library that generates fake data for OSGeo-supported datatypes',
+    description='A python library that generates fake geospatial data',
     long_description=readme + '\n\n' + history,
     author='Will B',
     author_email='wbierbower@gmail.com',
