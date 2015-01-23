@@ -16,7 +16,7 @@ Faux Geospatial Data
         :alt: Documentation Status
 
 
-A python library that generates fake data for OSGeo-supported datatypes
+A python library that generates fake data using OSGeo-supported datatypes
 
 * Free software: BSD license
 * Documentation: https://fauxgeodata.readthedocs.org.
