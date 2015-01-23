@@ -12,8 +12,8 @@ Faux Geospatial Data
         :target: https://pypi.python.org/pypi/fauxgeodata
 
 .. image:: https://readthedocs.org/projects/fauxgeodata/badge/?version=latest
-:target: https://readthedocs.org/projects/fauxgeodata/?badge=latest
-:alt: Documentation Status
+        :target: https://readthedocs.org/projects/fauxgeodata/?badge=latest
+        :alt: Documentation Status
 
 
 A python library that generates fake data for OSGeo-supported datatypes
