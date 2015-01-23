@@ -12,5 +12,4 @@ def fauxgeodata():
 	Returns
 		hello_world (string): "hello world"!
 	'''
-	a = np.array([1,2,3])
 	return "hello world"
