@@ -1,5 +1,5 @@
 ===============================
-Hello World Project
+Faux Geospatial Data
 ===============================
 
 .. image:: https://badge.fury.io/py/fauxgeodata.png
@@ -12,12 +12,21 @@ Hello World Project
         :target: https://pypi.python.org/pypi/fauxgeodata
 
 
-Faux Geospatial Data contains some simple code to help test all the processes involved with getting a Pysource project setup right.
+A python library that generates fake data for OSGeo-supported datatypes
 
 * Free software: BSD license
 * Documentation: https://fauxgeodata.readthedocs.org.
 
 Features
 --------
+
+GDAL-supported Rasters
+OGR-support Vectors
+
+Installation
+------------
+
+Tests
+-----
 
 * TODO
