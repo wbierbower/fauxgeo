@@ -24,8 +24,8 @@ A python library that generates fake data using OSGeo-supported datatypes
 Features
 --------
 
-GDAL-supported Rasters
-OGR-support Vectors
++ GDAL-supported Rasters
++ OGR-support Vectors
 
 Installation
 ------------
