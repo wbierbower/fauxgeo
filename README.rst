@@ -24,6 +24,7 @@ Features
 
 
 
+
 Installation
 ------------
 
@@ -31,4 +32,22 @@ Installation
 
 Tests
 -----
+
+
+
+Planning
+--------
+
+Rasters
++ resolution / pixel_size
++ 2d image
++ coordinate system
++ position
++ nodata value
++ 
+
+
+Vectors
++ features
++ 
 
