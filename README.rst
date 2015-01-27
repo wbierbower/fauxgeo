@@ -13,7 +13,7 @@ Faux Geospatial Data
         :alt: Documentation Status
 
 
-A python library that generates fake geospatial data
+A python library that generates simple rasters and vectors.  The primary purpose for this library is to serve as an aid in testing geoprocessing functions.
 
 * Free software: BSD license
 * Documentation: https://fauxgeodata.readthedocs.org.
@@ -22,12 +22,13 @@ Features
 --------
 
 
+
+
 Installation
 ------------
+
+
 
 Tests
 -----
 
-
-TODO
-----
