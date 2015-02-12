@@ -9,6 +9,7 @@ python:
 before_install:
   - sudo apt-get update -y
   - sudo apt-get install python-gdal
+  - sudo apt-get install libgdal-dev
   - sudo apt-get install python-numpy
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
