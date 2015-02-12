@@ -7,6 +7,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
+# import multiprocessing
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
@@ -22,7 +23,9 @@ test_requirements = [
     # TODO: put package test requirements here
     "numpy",
     "rasterio",
-    "wheel"
+    "wheel",
+    "nose",
+    "coverage"
 ]
 
 setup(
@@ -33,13 +36,7 @@ setup(
     author='Will B',
     author_email='wbierbower@gmail.com',
     url='https://github.com/wbierbower/fauxgeodata',
-    packages=[
-        'fauxgeodata',
-        'tests'
-    ],
-    package_dir={'fauxgeodata': 'fauxgeodata',
-                 'tests': 'tests'},
-    include_package_data=True,
+    packages=find_packages(),
     install_requires=requirements,
     license="BSD",
     zip_safe=False,
@@ -54,5 +51,7 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
     test_suite='tests',
-    tests_require=test_requirements
+    extras_require={
+        'tests': test_requirements
+    }
 )
