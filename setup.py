@@ -33,9 +33,7 @@ setup(
     author='Will B',
     author_email='wbierbower@gmail.com',
     url='https://github.com/wbierbower/fauxgeodata',
-    packages=[
-        'fauxgeodata',
-    ],
+    packages=find_packages(),
     package_dir={'fauxgeodata':
                  'fauxgeodata'},
     include_package_data=True,
