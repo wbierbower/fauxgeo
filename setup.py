@@ -34,8 +34,6 @@ setup(
     author_email='wbierbower@gmail.com',
     url='https://github.com/wbierbower/fauxgeodata',
     packages=find_packages(),
-    package_dir={'fauxgeodata':
-                 'fauxgeodata'},
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
