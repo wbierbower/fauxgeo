@@ -38,13 +38,22 @@ def create_raster(filepath, orgX, orgY, pixWidth, pixHeight, array, proj=4326):
 
     Args:
         filepath (string): where to save file
-        proj (int): EPSG code
-        orgX (float): bottom left x dimension?
+        orgX (float): x dimension origin coordinate (bottom left untransformed)
+        orgX (float): y dimension origin coordinate (bottom left untransformed)
+        pixWidth (float): size of each pixel's width (units depend on
+            projection)
+        pixHeight (float): size of each pixel's height (units depend on
+            projection)
         array (np.array): raster values
+
+    Keyword Args:
+        proj (int): EPSG code
 
     Returns:
         None
     '''
+    assert(len(array.shape) == 2)
+
     num_bands = 1
     rotX = 0
     rotY = 0
