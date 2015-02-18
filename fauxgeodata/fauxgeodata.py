@@ -32,14 +32,14 @@ def generate_geometries():
     pass
 
 
-def create_raster(filepath, orgX, orgY, pixWidth, pixHeight, array, proj=4326):
+def create_raster(filepath, orgX, orgY, pixWidth, pixHeight, array, proj=4326, gdal_type=gdal.GDT_Float32, nodata=-9999):
     '''
     Creates an arbitrary raster
 
     Args:
         filepath (string): where to save file
         orgX (float): x dimension origin coordinate (bottom left untransformed)
-        orgX (float): y dimension origin coordinate (bottom left untransformed)
+        orgY (float): y dimension origin coordinate (bottom left untransformed)
         pixWidth (float): size of each pixel's width (units depend on
             projection)
         pixHeight (float): size of each pixel's height (units depend on
@@ -48,6 +48,8 @@ def create_raster(filepath, orgX, orgY, pixWidth, pixHeight, array, proj=4326):
 
     Keyword Args:
         proj (int): EPSG code
+        gdal_type (GDAL Datatype): a GDAL datatype
+        nodata (same as gdal_type): the NODATA value 
 
     Returns:
         None
@@ -62,10 +64,11 @@ def create_raster(filepath, orgX, orgY, pixWidth, pixHeight, array, proj=4326):
     cols = array.shape[1]
 
     driver = gdal.GetDriverByName('GTiff')
-    raster = driver.Create(filepath, cols, rows, num_bands, gdal.GDT_Byte)
+    raster = driver.Create(filepath, cols, rows, num_bands, gdal_type)
     raster.SetGeoTransform((orgX, pixWidth, rotX, orgY, rotY, pixHeight))
 
     band = raster.GetRasterBand(1)  # Get only raster band
+    band.SetNoDataValue(nodata)
     band.WriteArray(array)
     raster_srs = osr.SpatialReference()
     raster_srs.ImportFromEPSG(proj)
