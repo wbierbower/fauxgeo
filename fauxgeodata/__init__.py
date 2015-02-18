@@ -3,3 +3,5 @@
 __author__ = 'Will Bierbower'
 __email__ = 'wbierbower@gmail.com'
 __version__ = '0.1.0'
+
+from fauxgeodata import *
