@@ -15,7 +15,7 @@ import numpy as np
 from affine import Affine
 import gdal
 
-from fauxgeodata import Raster, TestRaster, RasterFactory
+from fauxgeo import Raster, TestRaster, RasterFactory
 
 
 class Test_Raster(unittest.TestCase):

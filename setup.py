@@ -31,18 +31,18 @@ test_requirements = [
 ]
 
 setup(
-    name='fauxgeodata',
+    name='fauxgeo',
     version='0.1.1',
     description='A python library that generates fake geospatial data',
     long_description=readme + '\n\n' + history,
     author='Will B',
     author_email='wbierbower@gmail.com',
-    url='https://github.com/wbierbower/fauxgeodata',
+    url='https://github.com/wbierbower/fauxgeo',
     packages=find_packages(),
     install_requires=requirements,
     license="BSD",
     zip_safe=False,
-    keywords='fauxgeodata',
+    keywords='fauxgeo',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

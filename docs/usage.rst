@@ -2,6 +2,6 @@
 Usage
 ========
 
-To use Faux Geospatial Data in a project::
+To use fauxgeo in a project::
 
-    import fauxgeodata
+    import fauxgeo

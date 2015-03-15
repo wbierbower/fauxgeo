@@ -4,9 +4,9 @@ Installation
 
 At the command line::
 
-    $ easy_install fauxgeodata
+    $ easy_install fauxgeo
 
 Or, if you have virtualenvwrapper installed::
 
-    $ mkvirtualenv fauxgeodata
-    $ pip install fauxgeodata
+    $ mkvirtualenv fauxgeo
+    $ pip install fauxgeo
