@@ -1,6 +1,6 @@
-===============================
-Faux Geospatial Data
-===============================
+===========
+fauxgeodata
+===========
 
 .. image:: https://badge.fury.io/py/fauxgeodata.png
     :target: http://badge.fury.io/py/fauxgeodata
@@ -21,13 +21,15 @@ A python library that generates simple OSGeo-supported rasters and vectors.  The
 Features
 --------
 
-
-
+* Raster Class
+* TestRaster Class
+* RasterFactory Class
 
 
 Installation
 ------------
 
+	pip install fauxgeodata
 
 
 Tests
@@ -38,17 +40,5 @@ Tests
 Planning
 --------
 
-Rasters
-
-* resolution / pixel_size
-* 2d image
-* coordinate system
-* position
-* nodata value
-
-
-Vectors
-
-* features
 
 
