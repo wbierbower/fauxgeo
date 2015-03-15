@@ -1,5 +1,5 @@
 '''
-Raster, TestRaster, and Raster Factory Classes
+Raster, TestRaster, and RasterFactory Classes
 '''
 
 import tempfile
