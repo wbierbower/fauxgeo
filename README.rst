@@ -104,7 +104,7 @@ The RasterFactory Class
     test_raster_1 = factory.uniform(5)  # returns raster with 1 band filled with 5's
     test_raster_2 = factory.alternating(0, 1)
     test_raster_3 = factory.random()
-    test_raster_3 = factory.horizontal_ramp(1, 10)  # interpolated from 1 to 10 across columns
+    test_raster_4 = factory.horizontal_ramp(1, 10)  # interpolated from 1 to 10 across columns
 
 Tests
 -----
