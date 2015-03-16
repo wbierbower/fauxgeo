@@ -30,6 +30,8 @@ fauxgeo 0.1.1 requires
 Installation
 ------------
 
+.. code::
+
 	pip install fauxgeo
 
 
