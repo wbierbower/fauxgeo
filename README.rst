@@ -59,6 +59,7 @@ The Raster Class
 The TestRaster Class
 
 .. code::
+
 	from affine import Affine
 	import gdal
 
@@ -84,10 +85,11 @@ The TestRaster Class
 The RasterFactory Class
 
 .. code::
-	from affine import Affine
-	import gdal
 
-	# set arguments
+    from affine import Affine
+    import gdal
+
+    # set arguments
     self.shape = (3, 3)
     self.affine = Affine.identity()
     self.proj = 4326
