@@ -60,6 +60,7 @@ The TestRaster Class
 
 .. code::
 
+	import numpy as np
 	from affine import Affine
 	import gdal
 
