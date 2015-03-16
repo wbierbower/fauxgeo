@@ -42,6 +42,67 @@ Features
 * RasterFactory Class
 
 
+Usage
+-----
+
+The Raster Class
+
+.. code::
+	
+	raster = Raster('path/to/geotiff')
+	raster.uri  # equals '/path/to/geotiff'
+	raster.get_band(1)  # returns 2d numpy array
+	raster.get_bands()  # returns 3d numpy array
+	raster.get_nodata_val()  # returns nodata value
+	raster.shape()  # returns 2-tuple (rows, cols)
+
+The TestRaster Class
+
+.. code::
+	from affine import Affine
+	import gdal
+
+	# set arguments
+	array = np.ones((3, 3))
+	affine = Affine.identity()
+	proj = 4326
+	datatype = gdal.GDT_Float64
+	nodata_val = -9999.0
+
+	# uses tempfile to create temporary file
+	test_raster = TestRaster(array, affine, proj, datatype, nodata_val)
+
+	# same functions as Raster class
+	raster.get_band(1)  # returns 2d numpy array
+	raster.get_bands()  # returns 3d numpy array
+	raster.get_nodata_val()  # returns nodata value
+	raster.shape()  # returns 2-tuple (rows, cols)	
+
+	del test_raster  # cleans up temporary file on object deletion or program exit
+
+
+The RasterFactory Class
+
+.. code::
+	from affine import Affine
+	import gdal
+
+	# set arguments
+    self.shape = (3, 3)
+    self.affine = Affine.identity()
+    self.proj = 4326
+    self.datatype = gdal.GDT_Float64
+    self.nodata_val = -9999
+
+    # initialize factory
+    factory = RasterFactory(proj, datatype, nodata_val, shape[0], shape[1], affine=affine)
+
+    # create test rasters
+    test_raster_1 = factory.filled_value(5)  # returns raster with 1 band filled with 5's
+    test_raster_2 = factory.filled_alternating_values(0, 1)
+    test_raster_3 = factory.filled_random()
+    test_raster_3 = factory.filled_ramp_across_cols(1, 10)  # interpolated from 1 to 10 across columns
+
 Tests
 -----
 
