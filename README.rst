@@ -90,11 +90,11 @@ The RasterFactory Class
     import gdal
 
     # set arguments
-    self.shape = (3, 3)
-    self.affine = Affine.identity()
-    self.proj = 4326
-    self.datatype = gdal.GDT_Float64
-    self.nodata_val = -9999
+    shape = (3, 3)
+    affine = Affine.identity()
+    proj = 4326
+    datatype = gdal.GDT_Float64
+    nodata_val = -9999
 
     # initialize factory
     factory = RasterFactory(proj, datatype, nodata_val, shape[0], shape[1], affine=affine)
