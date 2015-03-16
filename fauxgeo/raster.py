@@ -149,7 +149,7 @@ class Raster(object):
         self._close_dataset()
         return a
 
-    def get_nodata_val(self, band_num):
+    def get_nodata(self, band_num):
         nodata_val = None
         self._open_dataset()
 

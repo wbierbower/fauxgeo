@@ -53,7 +53,7 @@ The Raster Class
 	raster.uri  # equals '/path/to/geotiff'
 	raster.get_band(1)  # returns 2d numpy array
 	raster.get_bands()  # returns 3d numpy array
-	raster.get_nodata_val()  # returns nodata value
+	raster.get_nodata()  # returns nodata value
 	raster.shape()  # returns 2-tuple (rows, cols)
 
 The TestRaster Class
@@ -77,7 +77,7 @@ The TestRaster Class
 	# same functions as Raster class
 	raster.get_band(1)  # returns 2d numpy array
 	raster.get_bands()  # returns 3d numpy array
-	raster.get_nodata_val()  # returns nodata value
+	raster.get_nodata()  # returns nodata value
 	raster.shape()  # returns 2-tuple (rows, cols)	
 
 	del test_raster  # cleans up temporary file on object deletion or program exit
