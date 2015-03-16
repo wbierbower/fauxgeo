@@ -13,7 +13,7 @@ Fauxgeo
         :alt: Documentation Status
 
 
-A python library that generates simple OSGeo-supported rasters and vectors.  The primary purpose for this library to help test geoprocessing functions.
+A python library that generates simple OSGeo-supported rasters and vectors.  The primary purpose for this library is to help test geoprocessing functions.
 
 * Free software: BSD license
 * Documentation: https://fauxgeo.readthedocs.org.
