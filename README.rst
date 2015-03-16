@@ -119,3 +119,9 @@ Planning
 * Add basic visualization functionality
 * Add Vector, TestVector, and VectorFactory classes
 * Add sample/default arguments for Raster classes to simplify raster creation
+
+Notes
+-----
+
+* Look into object deletion depending on scope
+* 
