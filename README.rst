@@ -47,7 +47,7 @@ Usage
 
 The Raster Class
 
-.. code::
+.. code:: python
 	
 	raster = Raster('path/to/geotiff')
 	raster.uri  # equals '/path/to/geotiff'
@@ -58,7 +58,7 @@ The Raster Class
 
 The TestRaster Class
 
-.. code::
+.. code:: python
 
 	import numpy as np
 	from affine import Affine
@@ -85,7 +85,7 @@ The TestRaster Class
 
 The RasterFactory Class
 
-.. code::
+.. code:: python
 
     from affine import Affine
     import gdal
