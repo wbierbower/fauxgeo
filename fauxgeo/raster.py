@@ -292,27 +292,27 @@ class RasterFactory(object):
             r.init(array, self.affine, self.proj, self.datatype, self.nodata_val)
             return r
 
-    def filled_value(self, val, uri=None):
+    def uniform(self, val, uri=None):
         a = np.ones((self.rows, self.cols)) * val
         return self._create_raster(a, uri)
 
-    def filled_alternating_values(self, val1, val2, uri=None):
+    def alternating(self, val1, val2, uri=None):
         a = np.ones((self.rows, self.cols)) * val2
         a[::2, ::2] = val1
         a[1::2, 1::2] = val1
         return self._create_raster(a, uri)
 
-    def filled_random(self, uri=None):
+    def random(self, uri=None):
         a = np.random.rand(self.rows, self.cols)
         return self._create_raster(a, uri)
 
-    def filled_ramp_across_cols(self, val1, val2, uri=None):
+    def horizontal_ramp(self, val1, val2, uri=None):
         a = np.zeros((self.rows, self.cols))
         col_vals = np.linspace(val1, val2, self.cols)
         a[:] = col_vals
         return self._create_raster(a, uri)
 
-    def filled_ramp_across_rows(self, val1, val2, uri=None):
+    def vertical_ramp(self, val1, val2, uri=None):
         a = np.zeros((self.cols, self.rows))
         row_vals = np.linspace(val1, val2, self.rows)
         a[:] = row_vals

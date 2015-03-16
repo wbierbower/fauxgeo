@@ -101,10 +101,10 @@ The RasterFactory Class
     factory = RasterFactory(proj, datatype, nodata_val, shape[0], shape[1], affine=affine)
 
     # create test rasters
-    test_raster_1 = factory.filled_value(5)  # returns raster with 1 band filled with 5's
-    test_raster_2 = factory.filled_alternating_values(0, 1)
-    test_raster_3 = factory.filled_random()
-    test_raster_3 = factory.filled_ramp_across_cols(1, 10)  # interpolated from 1 to 10 across columns
+    test_raster_1 = factory.uniform(5)  # returns raster with 1 band filled with 5's
+    test_raster_2 = factory.alternating(0, 1)
+    test_raster_3 = factory.random()
+    test_raster_3 = factory.horizontal_ramp(1, 10)  # interpolated from 1 to 10 across columns
 
 Tests
 -----

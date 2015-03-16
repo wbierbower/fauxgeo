@@ -83,11 +83,11 @@ class Test_RasterFactory(unittest.TestCase):
             affine=self.affine)
 
     def test_raster_creation(self):
-        r = self.Factory.filled_ramp_across_rows(10, 6)
+        r = self.Factory.horizontal_ramp(10, 6)
         assert(r.get_band(1)[0, 0] == 10)
 
     def test_raster_deletion(self):
-        r = self.Factory.filled_value(5)
+        r = self.Factory.uniform(5)
         uri = r.uri
         assert(os.path.exists(uri))
         del r
