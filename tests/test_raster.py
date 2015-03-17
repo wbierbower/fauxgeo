@@ -39,8 +39,11 @@ class Test_Raster(unittest.TestCase):
 
         pass
 
-    def tearDown(self):
-        os.remove(self.raster.uri)
+    # # this isn't needed right now because of the embedded cleanup function
+    # # currently in the Raster class and the fact that the above raster url
+    # # is set to None
+    # def tearDown(self):
+    #     os.remove(self.raster.uri)
 
 
 class Test_TestRaster(unittest.TestCase):
