@@ -17,6 +17,7 @@ class Raster(object):
         self.exists = False
         self.uri = uri
         self.dataset = None
+        self.tmp = False
 
         if uri is not None:
             if os.path.exists(uri):
@@ -45,7 +46,7 @@ class Raster(object):
 
     # Should probably be in TestRaster class
     def _close(self):
-        if self.tmp is False:
+        if self.tmp is True:
             os.remove(self.uri)
 
     def init(self, array, affine, proj, datatype, nodata_val):
