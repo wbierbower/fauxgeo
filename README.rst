@@ -21,9 +21,10 @@ A python library that generates simple OSGeo-supported rasters and vectors.  The
 Requirements
 ------------
 
-fauxgeo 0.1.1 requires
+fauxgeo 0.1.3 requires
 
 * NumPy
+* Matplotlib
 * GDAL
 * affine == 1.0
 

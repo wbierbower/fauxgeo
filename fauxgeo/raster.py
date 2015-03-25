@@ -1,126 +1,113 @@
 '''
-Raster, TestRaster, and RasterFactory Classes
+Raster Class
 '''
 
-import tempfile
 import os
 import gdal
 import osr
 import numpy as np
 from affine import Affine
+from StringIO import StringIO
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+from matplotlib import image
 
 
 class Raster(object):
     # any global variables here
-
-    def __init__(self, uri):
-        self.exists = False
+    def __init__(self, uri, driver):
         self.uri = uri
+        self.driver = driver
         self.dataset = None
-        self.tmp = False
 
-        if uri is not None:
-            if os.path.exists(uri):
-                self.exists = True
-            else:
-                self.exists = False
-                # os.makedirs(uri)
-                f = open(uri, 'w')
-                f.close()
+    @classmethod
+    def from_array(self, output_uri, array, affine, proj, datatype, nodata_val, driver='GTiff'):
+        if len(array.shape) is 2:
+            num_bands = 1
+        elif len(array.shape) is 3:
+            num_bands = len(array)
         else:
-            # make temporary raster file
-            self.exists = False
-            self.tmp = True
-            tmpfile = tempfile.NamedTemporaryFile(mode='r')
-            self.uri = tmpfile.name
-            tmpfile.close()
+            raise ValueError
+
+        rows = array.shape[0]
+        cols = array.shape[1]
+
+        driver = gdal.GetDriverByName(driver)
+        dataset = driver.Create(output_uri, cols, rows, num_bands, datatype)
+        dataset.SetGeoTransform((affine.to_gdal()))
+
+        for band_num in range(num_bands):
+            band = dataset.GetRasterBand(band_num + 1)  # Get only raster band
+            band.SetNoDataValue(nodata_val)
+            if num_bands > 1:
+                band.WriteArray(array[band_num])
+            else:
+                band.WriteArray(array)
+            dataset_srs = osr.SpatialReference()
+            dataset_srs.ImportFromEPSG(proj)
+            dataset.SetProjection(dataset_srs.ExportToWkt())
+            band.FlushCache()
+
+        band = None
+        dataset_srs = None
+        dataset = None
+        driver = None
+
+        return Raster(output_uri, driver=driver)
+
+    @classmethod
+    def from_file(self, uri, driver='GTiff'):
+        if not os.path.isabs(uri):
+            uri = os.path.join(os.getcwd(), uri)
+        # assert existence
+        return Raster(uri, driver)
+
+    @classmethod
+    def simple_affine(self, top_left_x, top_left_y, pix_width, pix_height):
+        return Affine(pix_width, 0, top_left_x, 0, -(pix_height), top_left_y)
 
     def __str__(self):
-        return "raster at %s" % (self.uri)
+        return self.uri
 
-    def __del__(self):
-        self._close()
+    def __len__(self):
+        return self.band_count()
 
-    def __exit__(self):
-        self._close()
+    def __eq__(self):
+        pass  # false if different shape, element-by-element if same shape
 
-    # Should probably be in TestRaster class
-    def _close(self):
-        if self.tmp is True:
-            os.remove(self.uri)
+    def __getitem__(self):
+        pass  # return numpy slice?  Raster object with sliced numpy array?
 
-    def init(self, array, affine, proj, datatype, nodata_val):
-        # if self.exists == True:
-        #     raise Exception
+    def __setitem__(self):
+        pass  # set numpy values to raster
 
-        if len(array.shape) == 2:
-            num_bands = 1
-        elif len(array.shape) == 3:
-            num_bands = len(array)
-        else:
-            raise ValueError
+    def __getslice__(self):
+        pass
 
-        rows = array.shape[0]
-        cols = array.shape[1]
+    def __setslice__(self):
+        pass
 
-        driver = gdal.GetDriverByName('GTiff')
-        dataset = driver.Create(self.uri, cols, rows, num_bands, datatype)
-        dataset.SetGeoTransform((
-            affine.c, affine.a, affine.b, affine.f, affine.d, affine.e))
+    def __iter__(self):
+        pass  # iterate over bands?
 
-        for band_num in range(num_bands):
-            band = dataset.GetRasterBand(band_num + 1)  # Get only raster band
-            band.SetNoDataValue(nodata_val)
-            if num_bands > 1:
-                band.WriteArray(array[band_num])
-            else:
-                band.WriteArray(array)
-            dataset_srs = osr.SpatialReference()
-            dataset_srs.ImportFromEPSG(proj)
-            dataset.SetProjection(dataset_srs.ExportToWkt())
-            band.FlushCache()
+    def __contains__(self):
+        pass  # test numpy raster against all bands?
 
-        self.exists = True
-        band = None
-        dataset_srs = None
-        dataset = None
-        driver = None
+    def _figure_data(self, format):
+        f = StringIO()
+        array = self.get_band(1)
+        plt.imsave(f, array, cmap=cm.Greys_r)
+        f.seek(0)
+        return f.read()
 
-    def init_2(self, array, bot_left_x, bot_left_y, pix_width, proj, datatype, nodata_val):
+    def _repr_png_(self):
+        return self._figure_data('png')
 
-        if len(array.shape) == 2:
-            num_bands = 1
-        elif len(array.shape) == 3:
-            num_bands = len(array)
-        else:
-            raise ValueError
-
-        rows = array.shape[0]
-        cols = array.shape[1]
-        vertical_offset = rows * pix_width
-
-        driver = gdal.GetDriverByName('GTiff')
-        dataset = driver.Create(self.uri, cols, rows, num_bands, datatype)
-        dataset.SetGeoTransform((
-            bot_left_x, pix_width, 0, (bot_left_y + vertical_offset), 0, -(pix_width)))
-
-        for band_num in range(num_bands):
-            band = dataset.GetRasterBand(band_num + 1)  # Get only raster band
-            band.SetNoDataValue(nodata_val)
-            if num_bands > 1:
-                band.WriteArray(array[band_num])
-            else:
-                band.WriteArray(array)
-            dataset_srs = osr.SpatialReference()
-            dataset_srs.ImportFromEPSG(proj)
-            dataset.SetProjection(dataset_srs.ExportToWkt())
-            band.FlushCache()
-
-        self.exists = True
-        band = None
-        dataset_srs = None
-        dataset = None
-        driver = None
+    def band_count(self):
+        self._open_dataset()
+        count = self.dataset.RasterCount
+        self._close_dataset()
+        return count
 
     def get_band(self, band_num):
         a = None
@@ -129,6 +116,8 @@ class Raster(object):
         if band_num >= 1 and band_num <= self.dataset.RasterCount:
             band = self.dataset.GetRasterBand(band_num)
             a = band.ReadAsArray()
+            nodata_val = band.GetNoDataValue()
+            a = np.ma.masked_equal(a, nodata_val)
             band = None
         else:
             pass
@@ -142,10 +131,13 @@ class Raster(object):
         if self.dataset.RasterCount == 0:
             return None
 
-        a = np.zeros((self.dataset.RasterYSize, self.dataset.RasterXSize, self.dataset.RasterCount))
-        for num in arange(self.dataset.RasterCount):
+        a = np.zeros((self.dataset.RasterCount, self.dataset.RasterYSize, self.dataset.RasterXSize))
+        for num in np.arange(self.dataset.RasterCount):
             band = self.dataset.GetRasterBand(num+1)
-            a[:, :, num] = band.ReadAsArray()
+            b = band.ReadAsArray()
+            nodata_val = band.GetNoDataValue()
+            b = np.ma.masked_equal(b, nodata_val)
+            a[num] = b
 
         self._close_dataset()
         return a
@@ -242,82 +234,29 @@ class Raster(object):
         else:
             raise Exception
 
+    def clip(self, aoi):
+        raise NotImplementedError
+
+    def reproject(self, proj, resample_method, pixel_size):
+        raise NotImplementedError
+
+    def reclass(self, reclass_table):
+        raise NotImplementedError
+
+    def overlay(self, raster):
+        raise NotImplementedError
+
+    def is_aligned(self, raster):
+        raise NotImplementedError
+
+    def align(self, raster, resample_method):
+        raise NotImplementedError
+
+    def copy(self, uri):
+        raise NotImplementedError
+
     def _open_dataset(self):
         self.dataset = gdal.Open(self.uri)
 
     def _close_dataset(self):
         self.dataset = None
-
-
-class TestRaster(Raster):
-
-    def __init__(self, array, affine, proj, datatype, nodata_val):
-        super(TestRaster, self).__init__(None)
-        self.init(array, affine, proj, datatype, nodata_val)
-
-    def __del__(self):
-        self._close()
-
-    def __exit__(self):
-        self._close()
-
-    def _close(self):
-        os.remove(self.uri)
-
-
-class RasterFactory(object):
-
-    def __init__(self, proj, datatype, nodata_val, rows, cols, affine=Affine.identity):
-        self.proj = proj
-        self.datatype = datatype
-        self.nodata_val = nodata_val
-        self.rows = rows
-        self.cols = cols
-        self.affine = affine
-
-    def get_metadata(self):
-        meta = {}
-        meta['proj'] = self.proj
-        meta['datatype'] = self.datatype
-        meta['nodata_val'] = self.nodata_val
-        meta['rows'] = self.rows
-        meta['cols'] = self.cols
-        meta['affine'] = self.affine
-        return meta
-
-    def _create_raster(self, array, uri):
-        if uri is None:
-            return TestRaster(array, self.affine, self.proj, self.datatype, self.nodata_val)
-        else:
-            r = Raster(uri)
-            r.init(array, self.affine, self.proj, self.datatype, self.nodata_val)
-            return r
-
-    def uniform(self, val, uri=None):
-        a = np.ones((self.rows, self.cols)) * val
-        return self._create_raster(a, uri)
-
-    def alternating(self, val1, val2, uri=None):
-        a = np.ones((self.rows, self.cols)) * val2
-        a[::2, ::2] = val1
-        a[1::2, 1::2] = val1
-        return self._create_raster(a, uri)
-
-    def random(self, uri=None):
-        a = np.random.rand(self.rows, self.cols)
-        return self._create_raster(a, uri)
-
-    def horizontal_ramp(self, val1, val2, uri=None):
-        a = np.zeros((self.rows, self.cols))
-        col_vals = np.linspace(val1, val2, self.cols)
-        a[:] = col_vals
-        return self._create_raster(a, uri)
-
-    def vertical_ramp(self, val1, val2, uri=None):
-        a = np.zeros((self.cols, self.rows))
-        row_vals = np.linspace(val1, val2, self.rows)
-        a[:] = row_vals
-        a = a.T
-        return self._create_raster(a, uri)
-
-    # def bell_shape(self, uri=None):

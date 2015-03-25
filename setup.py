@@ -17,7 +17,8 @@ requirements = [
     "numpy",
     "affine",
     "gdal",
-    "wheel"
+    "wheel",
+    "matplotlib"
 ]
 
 test_requirements = [
@@ -25,6 +26,7 @@ test_requirements = [
     "numpy",
     "affine",
     "gdal",
+    "matplotlib",
     "wheel",
     "nose",
     "coverage"
@@ -32,7 +34,7 @@ test_requirements = [
 
 setup(
     name='fauxgeo',
-    version='0.1.2',
+    version='0.1.3',
     description='A python library that generates fake geospatial data',
     long_description=readme + '\n\n' + history,
     author='Will B',

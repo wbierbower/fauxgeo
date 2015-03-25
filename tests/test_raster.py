@@ -15,7 +15,7 @@ import numpy as np
 from affine import Affine
 import gdal
 
-from fauxgeo import Raster, TestRaster, RasterFactory
+from fauxgeo import Raster, TempRaster, RasterFactory
 
 
 class Test_Raster(unittest.TestCase):
@@ -46,7 +46,7 @@ class Test_Raster(unittest.TestCase):
     #     os.remove(self.raster.uri)
 
 
-class Test_TestRaster(unittest.TestCase):
+class Test_TempRaster(unittest.TestCase):
 
     def setUp(self):
         self.shape = (3, 3)
@@ -56,7 +56,7 @@ class Test_TestRaster(unittest.TestCase):
         self.datatype = gdal.GDT_Float64
         self.nodata_val = -9999
 
-        self.raster_del = TestRaster(self.array, self.affine, self.proj, self.datatype, self.nodata_val)
+        self.raster_del = TempRaster(self.array, self.affine, self.proj, self.datatype, self.nodata_val)
 
     def test_raster_deletion(self):
         uri = self.raster_del.uri
