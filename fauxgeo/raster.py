@@ -96,9 +96,19 @@ class Raster(object):
     def _figure_data(self, format):
         f = StringIO()
         array = self.get_band(1)
-        plt.imsave(f, array, cmap=cm.Greys_r)
-        f.seek(0)
-        return f.read()
+        # fig = plt.figure()
+        # ax = plt.subplot(1, 1, 1)
+        # plt.savefig(f, bbox_inches='tight', format=format)
+        # plt.imsave(f, array, cmap=cm.Greys_r)
+        # plt.imshow(array, interpolation="nearest")
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        # cax = ax.matshow(array, interpolation='nearest')
+        # fig.colorbar(cax)
+        plt.savefig(f, bbox_inches='tight', format=format)
+        # f.seek(0)
+        # return f.read()
+        return None
 
     def _repr_png_(self):
         return self._figure_data('png')
@@ -131,7 +141,11 @@ class Raster(object):
         if self.dataset.RasterCount == 0:
             return None
 
-        a = np.zeros((self.dataset.RasterCount, self.dataset.RasterYSize, self.dataset.RasterXSize))
+        a = np.zeros((
+            self.dataset.RasterCount,
+            self.dataset.RasterYSize,
+            self.dataset.RasterXSize))
+
         for num in np.arange(self.dataset.RasterCount):
             band = self.dataset.GetRasterBand(num+1)
             b = band.ReadAsArray()
@@ -253,6 +267,9 @@ class Raster(object):
         raise NotImplementedError
 
     def copy(self, uri):
+        raise NotImplementedError
+
+    def to_vector(self):
         raise NotImplementedError
 
     def _open_dataset(self):

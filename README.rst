@@ -50,7 +50,7 @@ The Raster Class
 
 .. code:: python
 	
-	raster = Raster('path/to/geotiff')
+	raster = Raster.from_file('path/to/geotiff')
 	raster.uri  # equals '/path/to/geotiff'
 	raster.get_band(1)  # returns 2d numpy array
 	raster.get_bands()  # returns 3d numpy array
@@ -73,7 +73,7 @@ The TestRaster Class
 	nodata_val = -9999.0
 
 	# uses tempfile to create temporary file
-	test_raster = TestRaster(array, affine, proj, datatype, nodata_val)
+	test_raster = TestRaster.from_array(array, affine, proj, datatype, nodata_val)
 
 	# same functions as Raster class
 	raster.get_band(1)  # returns 2d numpy array
