@@ -6,7 +6,7 @@ import numpy as np
 from affine import Affine
 
 from fauxgeo.raster import Raster
-from fauxgeo.raster import TempRaster
+from fauxgeo.temp_raster import TempRaster
 
 
 class RasterFactory(object):
