@@ -29,18 +29,13 @@ class Test_Raster(unittest.TestCase):
         self.proj = 4326
         self.datatype = gdal.GDT_Float64
         self.nodata_val = -9999
-        t = tempfile.NamedTemporaryFile(mode='w+')
-        t_aligned = tempfile.NamedTemporaryFile(mode='w+')
-        t_misaligned = tempfile.NamedTemporaryFile(mode='w+')
-        t.close()
-        t_aligned.close()
-        t_misaligned.close()
+
         self.raster = Raster.from_array(
-            t.name, self.array, self.affine, self.proj, self.datatype, self.nodata_val)
+            self.array, self.affine, self.proj, self.datatype, self.nodata_val)
         self.aligned_raster = Raster.from_array(
-            t_aligned.name, np.zeros(self.shape), self.affine, self.proj, self.datatype, self.nodata_val)
+            np.zeros(self.shape), self.affine, self.proj, self.datatype, self.nodata_val)
         self.misaligned_raster = Raster.from_array(
-            t_misaligned.name, self.array, self.misaligned_affine, self.proj, self.datatype, self.nodata_val)
+            self.array, self.misaligned_affine, self.proj, self.datatype, self.nodata_val)
 
     def test_get_functions(self):
         assert(self.raster.get_rows() == self.shape[0])
@@ -56,26 +51,29 @@ class Test_Raster(unittest.TestCase):
         assert(self.raster.get_projection() == 4326)
 
     def test_set_functions(self):
-        a = np.ma.masked_equal(np.zeros((self.shape)), 1)
-        self.raster.set_band(a)
-        np.testing.assert_array_equal(self.raster.get_band(1), a)
+        pass
 
     def test_is_aligned(self):
         assert(self.raster.is_aligned(self.aligned_raster) == True)
         assert(self.raster.is_aligned(self.misaligned_raster) == False)
 
     def test_align(self):
-        print self.misaligned_raster
         assert(self.raster.is_aligned(self.misaligned_raster) == False)
-        self.raster.align(self.misaligned_raster, "nearest")
-        print self.misaligned_raster
-        assert(self.raster.is_aligned(self.misaligned_raster) == True)
+        new_raster = self.raster.align(self.misaligned_raster, "nearest")
+        assert(self.raster.is_aligned(new_raster) == True)
+
+    def test_align_to(self):
+        assert(self.raster.is_aligned(self.misaligned_raster) == False)
+        new_raster = self.misaligned_raster.align_to(self.raster, "nearest")
+        assert(self.raster.is_aligned(new_raster) == True)
 
     def test_clip(self):
+        # self.raster.clip()
         pass
 
-    def test_project(self):
-        pass
+    # def test_reproject(self):
+    #     reprojected_raster = self.raster.reproject(26917, "nearest")
+    #     print reprojected_raster.get_band(1)
 
     def test_reclass(self):
         pass
@@ -90,9 +88,7 @@ class Test_Raster(unittest.TestCase):
         pass
 
     def tearDown(self):
-        os.remove(self.raster.uri)
-        os.remove(self.aligned_raster.uri)
-        os.remove(self.misaligned_raster.uri)
+        pass
 
 
 if __name__ == '__main__':

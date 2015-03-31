@@ -53,7 +53,7 @@ class TempRaster(Raster):
         dataset = None
         driver = None
 
-        return Raster(uri, driver=driver)
+        return TempRaster(uri, driver=driver)
 
     @classmethod
     def from_file():

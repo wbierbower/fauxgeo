@@ -21,7 +21,7 @@ class Raster(object):
         self.dataset = None
 
     @classmethod
-    def from_array(self, output_uri, array, affine, proj, datatype, nodata_val, driver='GTiff'):
+    def from_array(self, array, affine, proj, datatype, nodata_val, driver='GTiff'):
         if len(array.shape) is 2:
             num_bands = 1
         elif len(array.shape) is 3:
@@ -29,14 +29,12 @@ class Raster(object):
         else:
             raise ValueError
 
-        if not os.path.isabs(output_uri):
-            output_uri = os.path.join(os.getcwd(), output_uri)
-
+        dataset_uri = pygeo.geoprocessing.temporary_filename()
         rows = array.shape[0]
         cols = array.shape[1]
 
         driver = gdal.GetDriverByName(driver)
-        dataset = driver.Create(output_uri, cols, rows, num_bands, datatype)
+        dataset = driver.Create(dataset_uri, cols, rows, num_bands, datatype)
         dataset.SetGeoTransform((affine.to_gdal()))
 
         for band_num in range(num_bands):
@@ -56,18 +54,35 @@ class Raster(object):
         dataset = None
         driver = None
 
-        return Raster(output_uri, driver=driver)
+        return Raster(dataset_uri, driver=driver)
 
     @classmethod
     def from_file(self, uri, driver='GTiff'):
+        dataset_uri = pygeo.geoprocessing.temporary_filename()
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         # assert existence
+        shutil.copyfile(uri, dataset_uri)
+        return Raster(dataset_uri, driver)
+
+    @classmethod
+    def from_tempfile(self, uri, driver='GTiff'):
+        if not os.path.isabs(uri):
+            uri = os.path.join(os.getcwd(), uri)
         return Raster(uri, driver)
 
     @classmethod
     def simple_affine(self, top_left_x, top_left_y, pix_width, pix_height):
         return Affine(pix_width, 0, top_left_x, 0, -(pix_height), top_left_y)
+
+    def __del__(self):
+        self._delete()
+
+    def __exit__(self):
+        self._delete()
+
+    def _delete(self):
+        os.remove(self.uri)
 
     def __str__(self):
         return self.uri
@@ -76,12 +91,55 @@ class Raster(object):
         return self.band_count()
 
     def __mul__(self, raster):
-        def mul(x, y):
-            return x * y
-        return self.local_op(b, mul)
+        def mul_closer(nodata):
+            def mul(x, y):
+                if nodata in [x, y]:
+                    return nodata
+                return x * y
+            return mul
+        return self.local_op(raster, mul_closer)
 
-    def __eq__(self):
-        pass  # false if different shape, element-by-element if same shape
+    def __div__(self, raster):
+        def div_closer(nodata):
+            def div(x, y):
+                if nodata in [x, y]:
+                    return nodata
+                return x / y
+            return div
+        return self.local_op(raster, div_closer)
+
+    def __add__(self, raster):
+        def add_closer(nodata):
+            def add(x, y):
+                if nodata in [x, y]:
+                    return nodata
+                return x + y
+            return add
+        return self.local_op(raster, add_closer)
+
+    def __sub__(self, raster):
+        def sub_closer(nodata):
+            def sub(x, y):
+                if nodata in [x, y]:
+                    return nodata
+                return x - y
+            return sub
+        return self.local_op(raster, sub_closer)
+
+    def __pow__(self, raster):
+        def pow_closer(nodata):
+            def pow(x, y):
+                if nodata in [x, y]:
+                    return nodata
+                return x**y
+            return pow
+        return self.local_op(raster, pow_closer)
+
+    def __eq__(self, raster):
+        if self.is_aligned(raster) and (self.get_shape() == raster.get_shape()):
+            return (self.get_bands() == raster.get_bands())
+        else:
+            return False
 
     def __getitem__(self):
         pass  # return numpy slice?  Raster object with sliced numpy array?
@@ -106,6 +164,9 @@ class Raster(object):
 
     def _repr_png_(self):
         raise NotImplementedError
+
+    def save_raster(self, uri):
+        shutil.copyfile(self.uri, uri)
 
     def band_count(self):
         self._open_dataset()
@@ -223,13 +284,7 @@ class Raster(object):
         assert(len(masked_array[0]) == self.get_cols())
         assert(self.band_count() == 1)
 
-        uri = self.uri
-        array = masked_array.data
-        affine = self.get_affine()
-        proj = self.get_projection()
-        datatype = self.get_datatype(1)
-        nodata_val = masked_array.fill_value
-        Raster.from_array(uri, array, affine, proj, datatype, nodata_val)
+        raise NotImplementedError
 
     def set_bands(self, array):
         # if self.exists:
@@ -253,7 +308,7 @@ class Raster(object):
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         shutil.copyfile(self.uri, uri)
-        return Raster.from_file(uri)
+        return Raster.from_tempfile(uri)
 
     def is_aligned(self, raster):
         try:
@@ -290,16 +345,45 @@ class Raster(object):
             assert_datasets_projected=False,
             vectorize_op=False)
 
-        return Raster.from_file(dataset_out_uri)
-        # temp_raster = Raster.from_file(dataset_out_uri)
+        return Raster.from_tempfile(dataset_out_uri)
+        # temp_raster = Raster.from_tempfile(dataset_out_uri)
         # temp_raster.copy(raster.uri)
         # os.remove(dataset_out_uri)
+
+    def align_to(self, raster, resample_method):
+        '''Currently aligns other raster to this raster - later: union/intersection
+        '''
+        assert(self.get_projection() == raster.get_projection())
+
+        def dataset_pixel_op(x, y): return y
+        dataset_uri_list = [raster.uri, self.uri]
+        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(raster.uri)
+        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(raster.uri)
+        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+        bounding_box_mode = "dataset"
+
+        pygeo.geoprocessing.vectorize_datasets(
+            dataset_uri_list,
+            dataset_pixel_op,
+            dataset_out_uri,
+            datatype_out,
+            nodata_out,
+            pixel_size_out,
+            bounding_box_mode,
+            resample_method_list=[resample_method]*2,
+            dataset_to_align_index=0,
+            dataset_to_bound_index=0,
+            assert_datasets_projected=False,
+            vectorize_op=False)
+
+        return Raster.from_tempfile(dataset_out_uri)
 
     def clip(self, aoi_uri):
         dataset_out_uri = pygeo.geoprocessing.temporary_filename()
         pygeo.geoprocessing.clip_dataset_uri(
             self.uri, aoi_uri, dataset_out_uri)
-        return Raster.from_file(dataset_out_uri)
+        return Raster.from_tempfile(dataset_out_uri)
 
     def reproject(self, proj, resample_method, pixel_size=None):
         if pixel_size is None:
@@ -313,7 +397,7 @@ class Raster(object):
         pygeo.geoprocessing.reproject_dataset_uri(
             self.uri, pixel_size, wkt, resample_method, dataset_out_uri)
 
-        return Raster.from_file(dataset_out_uri)
+        return Raster.from_tempfile(dataset_out_uri)
 
     def reclass(self, reclass_table, out_nodata=None):
         if out_nodata is None:
@@ -329,7 +413,7 @@ class Raster(object):
             out_datatype,
             out_nodata)
 
-        return Raster.from_file(dataset_out_uri)
+        return Raster.from_tempfile(dataset_out_uri)
 
     def overlay(self, raster):
         raise NotImplementedError
@@ -337,15 +421,19 @@ class Raster(object):
     def to_vector(self):
         raise NotImplementedError
 
-    def local_op(self, raster, pixel_op):
+    def local_op(self, raster, pixel_op_closer):
         assert(self.is_aligned(raster))
+        assert(self.get_nodata(1) == raster.get_nodata(1))
 
+        nodata = self.get_nodata(1)
+        pixel_op = pixel_op_closer(nodata)
         dataset_uri_list = [self.uri, raster.uri]
         dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(raster.uri)
-        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(raster.uri)
+        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(self.uri)
+        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(self.uri)
         pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
         bounding_box_mode = "dataset"
+        resample_method = "nearest"
 
         pygeo.geoprocessing.vectorize_datasets(
             dataset_uri_list,
@@ -359,9 +447,9 @@ class Raster(object):
             dataset_to_align_index=0,
             dataset_to_bound_index=0,
             assert_datasets_projected=False,
-            vectorize_op=False)
+            vectorize_op=True)
 
-        return Raster.from_file(dataset_out_uri)
+        return Raster.from_tempfile(dataset_out_uri)
 
     def _open_dataset(self):
         self.dataset = gdal.Open(self.uri)
