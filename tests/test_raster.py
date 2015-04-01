@@ -75,6 +75,9 @@ class Test_Raster(unittest.TestCase):
     #     reprojected_raster = self.raster.reproject(26917, "nearest")
     #     print reprojected_raster.get_band(1)
 
+    def test_bounding_box(self):
+        print self.raster.get_bbox()
+
     def test_reclass(self):
         pass
 

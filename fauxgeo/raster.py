@@ -7,9 +7,11 @@ import tempfile
 import shutil
 
 import gdal
+import ogr
 import osr
 import numpy as np
 from affine import Affine
+from shapely.geometry import Polygon
 import pygeoprocessing as pygeo
 
 
@@ -260,7 +262,18 @@ class Raster(object):
         self._open_dataset()
         RasterSRS = osr.SpatialReference()
         RasterSRS.ImportFromWkt(self.dataset.GetProjectionRef())
-        return int(RasterSRS.GetAttrValue("AUTHORITY", 1))
+        proj = int(RasterSRS.GetAttrValue("AUTHORITY", 1))
+
+        RasterSRS = None
+        self._close_dataset()
+
+        return proj
+
+    def get_projection_wkt(self):
+        self._open_dataset()
+        wkt = self.dataset.GetProjectionRef()
+        self._close_dataset()
+        return wkt
 
     def get_geotransform(self):
         geotransform = None
@@ -276,7 +289,34 @@ class Raster(object):
         return Affine.from_gdal(*geotransform)
 
     def get_bbox(self):
-        pass
+        return pygeo.geoprocessing.get_bounding_box(self.uri)
+
+    def get_aoi(self):
+        bb = self.get_bbox()
+        u_x = max(bb[0::2])
+        l_x = min(bb[0::2])
+        u_y = max(bb[1::2])
+        l_y = min(bb[1::2])
+        return Polygon([(l_x, l_y), (l_x, u_y), (u_x, u_y), (u_x, l_y)])
+
+    def get_aoi_as_shapefile(self, uri):
+        bb = self.get_bbox()
+        u_x = max(bb[0::2])
+        l_x = min(bb[0::2])
+        u_y = max(bb[1::2])
+        l_y = min(bb[1::2])
+        aoi = Polygon([(l_x, l_y), (l_x, u_y), (u_x, u_y), (u_x, l_y)])
+        # wkb = aoi.wkb
+
+        # shpDriver = ogr.GetDriverByName("ESRI Shapefile")
+        # if os.path.exists(uri):
+        #     shpDriver.DeleteDataSource(uri)
+        # outDataSource = shpDriver.CreateDataSource(uri)
+        # outLayer = outDataSource.CreateLayer(uri, geom_type=ogr.wkbPolygon)
+        # featureDefn = outLayer.GetLayerDefn()
+        # outFeature = ogr.Feature(featureDefn)
+        # outFeature.SetGeometry(wkb)
+        # outLayer.CreateFeature(outFeature)
 
     def set_band(self, masked_array):
         '''Currently works for rasters with only one band'''
@@ -381,8 +421,23 @@ class Raster(object):
 
     def clip(self, aoi_uri):
         dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        pygeo.geoprocessing.clip_dataset_uri(
-            self.uri, aoi_uri, dataset_out_uri)
+        datatype = self.get_datatype()
+        nodata = self.get_nodata()
+        pixel_size = self.get_affine().a
+
+        pygeo.geoprocessing.vectorize_datasets(
+            [self.uri],
+            lambda x: x,
+            dataset_out_uri,
+            datatype,
+            nodata,
+            pixel_size,
+            'intersection',
+            aoi_uri=aoi_uri,
+            assert_datasets_projected=True,  # ?
+            process_pool=None,
+            vectorize_op=False)
+
         return Raster.from_tempfile(dataset_out_uri)
 
     def reproject(self, proj, resample_method, pixel_size=None):

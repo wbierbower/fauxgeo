@@ -33,15 +33,15 @@ Installation
 
 .. code::
 
-	pip install fauxgeo
+    pip install fauxgeo
 
 Features
 --------
 
 * Raster Class
-* TestRaster Class
 * RasterFactory Class
-
+* Vector Class
+* VectorFactory Class
 
 Usage
 -----
@@ -49,39 +49,29 @@ Usage
 The Raster Class
 
 .. code:: python
-	
-	raster = Raster.from_file('path/to/geotiff')
-	raster.uri  # equals '/path/to/geotiff'
-	raster.get_band(1)  # returns 2d numpy array
-	raster.get_bands()  # returns 3d numpy array
-	raster.get_nodata()  # returns nodata value
-	raster.shape()  # returns 2-tuple (rows, cols)
 
-The TestRaster Class
+    import numpy as np
+    from affine import Affine
+    import gdal
 
-.. code:: python
+    # set arguments
+    array = np.ones((3, 3))
+    affine = Affine.identity()
+    proj = 4326
+    datatype = gdal.GDT_Float64
+    nodata_val = -9999.0
 
-	import numpy as np
-	from affine import Affine
-	import gdal
+    raster = Raster.from_array(array, affine, proj, datatype, nodata_val)   
+    raster = Raster.from_file('path/to/geotiff')
 
-	# set arguments
-	array = np.ones((3, 3))
-	affine = Affine.identity()
-	proj = 4326
-	datatype = gdal.GDT_Float64
-	nodata_val = -9999.0
+    raster.uri  # equals '/path/to/geotiff'
+    raster.get_band(1)  # returns 2d numpy array
+    raster.get_bands()  # returns 3d numpy array
+    raster.get_nodata()  # returns nodata value
+    raster.shape()  # returns 2-tuple (rows, cols)
 
-	# uses tempfile to create temporary file
-	test_raster = TestRaster.from_array(array, affine, proj, datatype, nodata_val)
 
-	# same functions as Raster class
-	raster.get_band(1)  # returns 2d numpy array
-	raster.get_bands()  # returns 3d numpy array
-	raster.get_nodata()  # returns nodata value
-	raster.shape()  # returns 2-tuple (rows, cols)	
-
-	del test_raster  # cleans up temporary file on object deletion or program exit
+    del test_raster  # cleans up temporary file on object deletion or program exit
 
 
 The RasterFactory Class
@@ -111,18 +101,18 @@ Tests
 -----
 
 .. code::
-	
-	python setup.py test
+    
+    python setup.py test
 
 Planning
 --------
 
 * Add basic visualization functionality
-* Add Vector, TestVector, and VectorFactory classes
-* Add sample/default arguments for Raster classes to simplify raster creation
-
-Notes
------
-
-* Look into object deletion depending on scope
-* 
+* Raster Operations
+    * Reclass
+    * Overlay - intersection, union, clip
+    * Dissolve
+    * Buffer
+    * Raster_to_Vector
+    * Slope
+    * Aspect

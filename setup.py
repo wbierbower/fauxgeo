@@ -17,8 +17,9 @@ requirements = [
     "numpy",
     "affine",
     "gdal",
-    "wheel",
-    "pygeoprocessing"
+    "shapely",
+    "pygeoprocessing",
+    "wheel"
 ]
 
 test_requirements = [
@@ -26,6 +27,7 @@ test_requirements = [
     "numpy",
     "affine",
     "gdal",
+    "shapely",
     "pygeoprocessing",
     "wheel",
     "nose",
