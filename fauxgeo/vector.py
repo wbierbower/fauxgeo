@@ -58,12 +58,14 @@ class Vector(object):
 
     @classmethod
     def from_file(self, uri, driver='ESRI Shapefile'):
-        datasource_uri = pygeo.geoprocessing.temporary_filename()
+        dst_uri = pygeo.geoprocessing.temporary_filename()
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
-        # assert existence
-        shutil.copyfile(uri, datasource_uri)
-        return Vector(datasource_uri, driver)
+        src_uri = os.path.splitext(uri)[0]
+        for ext in ['.shp', '.shx', '.dbf', '.prj']:
+            if os.path.exists(src_uri+ext):
+                shutil.copyfile(src_uri+ext, dst_uri+ext)
+        return Vector(dst_uri, driver)
 
     @classmethod
     def from_tempfile(self, uri, driver='ESRI Shapefile'):
@@ -116,10 +118,11 @@ class Vector(object):
         raise NotImplementedError
 
     def save_vector(self, uri):
-        fp = os.path.splitext(self.uri)[0]
+        src_uri = os.path.splitext(self.uri)[0]
+        dst_uri = os.path.splitext(uri)[0]
         for ext in ['.shp', '.shx', '.dbf', '.prj']:
-            if os.path.exists(fp+ext):
-                shutil.copyfile(fp+ext, uri+ext)
+            if os.path.exists(src_uri+ext):
+                shutil.copyfile(src_uri+ext, dst_uri+ext)
 
     def feature_count(self):
         self._open_datasource()
