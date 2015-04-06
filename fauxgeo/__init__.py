@@ -4,4 +4,4 @@ from raster import *
 from raster_factory import *
 from vector import *
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
