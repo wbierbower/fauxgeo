@@ -1,5 +1,5 @@
 '''
-Raster Class
+Vector Class
 '''
 
 import os
@@ -85,7 +85,7 @@ class Vector(object):
             os.remove(fp+ext)
 
     def __str__(self):
-        return self.uri
+        return "<vector object at " + self.uri + ">"
 
     def __len__(self):
         return self.feature_count()
@@ -114,8 +114,8 @@ class Vector(object):
     def __repr__(self):
         raise NotImplementedError
 
-    def _repr_png_(self):
-        raise NotImplementedError
+    def _repr_svg_(self):
+        return self.get_geometry()._repr_svg_()
 
     def save_vector(self, uri):
         src_uri = os.path.splitext(self.uri)[0]
