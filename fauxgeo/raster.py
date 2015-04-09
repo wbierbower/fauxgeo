@@ -469,22 +469,24 @@ class Raster(object):
 
     def clip(self, aoi_uri):
         dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        datatype = self.get_datatype()
-        nodata = self.get_nodata()
-        pixel_size = self.get_affine().a
+        # datatype = self.get_datatype(1)
+        # nodata = self.get_nodata(1)
+        # pixel_size = self.get_affine().a
 
-        pygeo.geoprocessing.vectorize_datasets(
-            [self.uri],
-            lambda x: x,
-            dataset_out_uri,
-            datatype,
-            nodata,
-            pixel_size,
-            'intersection',
-            aoi_uri=aoi_uri,
-            assert_datasets_projected=True,  # ?
-            process_pool=None,
-            vectorize_op=False)
+        # pygeo.geoprocessing.vectorize_datasets(
+        #     [self.uri],
+        #     lambda x: x,
+        #     dataset_out_uri,
+        #     datatype,
+        #     nodata,
+        #     pixel_size,
+        #     'intersection',
+        #     aoi_uri=aoi_uri,
+        #     assert_datasets_projected=False,  # ?
+        #     process_pool=None,
+        #     vectorize_op=False)
+        pygeo.geoprocessing.clip_dataset_uri(
+            self.uri, aoi_uri, dataset_out_uri, assert_projections=False)
 
         return Raster.from_tempfile(dataset_out_uri)
 
