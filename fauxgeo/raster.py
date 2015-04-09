@@ -87,7 +87,15 @@ class Raster(object):
         os.remove(self.uri)
 
     def __str__(self):
-        return self.uri
+        string = '\nRASTER'
+        string += '\nNumber of Bands: ' + str(self.band_count())
+        string += '\nBand 1:\n' + self.get_band(1).__repr__()
+        string += self.get_affine().__repr__()
+        string += '\nNoData for Band 1: ' + str(self.get_nodata(1))
+        string += '\nProjection (EPSG): ' + str(self.get_projection())
+        string += '\nuri: ' + self.uri
+        string += '\n'
+        return string
 
     def __len__(self):
         return self.band_count()
@@ -376,28 +384,19 @@ class Raster(object):
         raise NotImplementedError
 
     def set_bands(self, array):
-        # if self.exists:
-        #     self._open_dataset()
-        #     band_count = self.dataset.RasterCount
-        #     self._close_dataset()
-
-        #     if band_count == 1 and len(array.shape) == 2:
-        #         assert(len(array) == self.get_rows)
-        #         assert(len(array[0]) == self.get_cols)
-        #         self.set_band(1, array)
-
-        #     elif len(array.shape) == 3 and array.shape[0] == band_count:
-        #         for band_num in range(band_count):
-        #             self.set_band(band_num + 1, array[band_num])
-        # else:
-        #     raise Exception
         raise NotImplementedError
+
+    def change_datatype_and_nodata(self, datatype, nodata_val):
+        array = self.get_band(1)
+        affine = self.get_affine()
+        proj = self.get_projection()
+        return Raster.from_array(array, affine, proj, datatype, nodata_val)
 
     def copy(self, uri):
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         shutil.copyfile(self.uri, uri)
-        return Raster.from_tempfile(uri)
+        return Raster.from_tempfile(uri, driver=self.driver)
 
     def is_aligned(self, raster):
         try:
