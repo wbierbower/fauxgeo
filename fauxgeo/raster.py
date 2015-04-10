@@ -373,7 +373,8 @@ class Raster(object):
         # outLayer.CreateFeature(outFeature)
 
     def get_cell_area(self):
-        raise NotImplementedError
+        affine = self.get_affine()
+        return abs((affine.a * affine.e))
 
     def set_band(self, masked_array):
         '''Currently works for rasters with only one band'''
