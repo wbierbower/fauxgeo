@@ -225,6 +225,12 @@ class Raster(object):
     def save_raster(self, uri):
         shutil.copyfile(self.uri, uri)
 
+    def ones(self):
+        return self.zeros() + 1
+
+    def zeros(self):
+        return self * 0
+
     def band_count(self):
         self._open_dataset()
         count = self.dataset.RasterCount
