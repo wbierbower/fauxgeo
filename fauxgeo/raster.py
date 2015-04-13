@@ -422,10 +422,18 @@ class Raster(object):
     def set_bands(self, array):
         raise NotImplementedError
 
-    def change_datatype_and_nodata(self, datatype, nodata_val):
+    def set_datatype(self, datatype):
         array = self.get_band(1)
         affine = self.get_affine()
         proj = self.get_projection()
+        nodata_val = self.get_nodata(1)
+        return Raster.from_array(array, affine, proj, datatype, nodata_val)
+
+    def set_nodata(self, nodata_val):
+        array = self.get_band(1)
+        affine = self.get_affine()
+        proj = self.get_projection()
+        datatype = self.get_datatype(1)
         return Raster.from_array(array, affine, proj, datatype, nodata_val)
 
     def copy(self, uri=None):
