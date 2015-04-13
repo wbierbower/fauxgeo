@@ -428,7 +428,9 @@ class Raster(object):
         proj = self.get_projection()
         return Raster.from_array(array, affine, proj, datatype, nodata_val)
 
-    def copy(self, uri):
+    def copy(self, uri=None):
+        if not uri:
+            uri = pygeo.geoprocessing.temporary_filename()
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         shutil.copyfile(self.uri, uri)
