@@ -146,6 +146,10 @@ class Vector(object):
 
         return shapely_object
 
+    def get_geometry_centroid(self):
+        centroid = self.get_geometry().centroid
+        return centroid
+
     def get_geometries(self, layer):
         raise NotImplementedError
 

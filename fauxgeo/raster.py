@@ -12,6 +12,7 @@ import osr
 import numpy as np
 from affine import Affine
 from shapely.geometry import Polygon
+import shapely
 import pygeoprocessing as pygeo
 
 
@@ -307,6 +308,34 @@ class Raster(object):
         self._close_dataset()
         return cols
 
+    def get_pixel_value(self, x, y):
+        '''
+        Position relative to origin regardless of affine transform
+        '''
+        pix = None
+        self._open_dataset()
+
+        try:
+            # Assertions
+            band = self.dataset.GetRasterBand(1)
+            pix = band.ReadAsArray(x, y, 1, 1)
+        finally:
+            self._close_dataset()
+
+        return pix
+
+    def get_pixel_coords_at_point(self, shapely_point):
+        mx, my = shapely_point.x, shapely_point.y
+        gt = self.get_geotransform()
+        px = int((mx - gt[0]) / gt[1])
+        py = int((my - gt[3]) / gt[5])
+
+        return (px, py)
+
+    def get_pixel_value_at_point(self, shapely_point):
+        px, py = self.get_pixel_coords_at_point(shapely_point)
+        return self.get_pixel_value(px, py)
+
     def get_shape(self):
         rows = self.get_rows()
         cols = self.get_cols()
@@ -469,27 +498,67 @@ class Raster(object):
         return Raster.from_tempfile(dataset_out_uri)
 
     def clip(self, aoi_uri):
+        r = None
         dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        # datatype = self.get_datatype(1)
-        # nodata = self.get_nodata(1)
-        # pixel_size = self.get_affine().a
+        datatype = self.get_datatype(1)
+        nodata = self.get_nodata(1)
+        pixel_size = self.get_affine().a
 
-        # pygeo.geoprocessing.vectorize_datasets(
-        #     [self.uri],
-        #     lambda x: x,
-        #     dataset_out_uri,
-        #     datatype,
-        #     nodata,
-        #     pixel_size,
-        #     'intersection',
-        #     aoi_uri=aoi_uri,
-        #     assert_datasets_projected=False,  # ?
-        #     process_pool=None,
-        #     vectorize_op=False)
-        pygeo.geoprocessing.clip_dataset_uri(
-            self.uri, aoi_uri, dataset_out_uri, assert_projections=False)
+        try:
+            pygeo.geoprocessing.vectorize_datasets(
+                [self.uri],
+                lambda x: x,
+                dataset_out_uri,
+                datatype,
+                nodata,
+                pixel_size,
+                'intersection',
+                aoi_uri=aoi_uri,
+                assert_datasets_projected=False,  # ?
+                process_pool=None,
+                vectorize_op=False,
+                rasterize_layer_options=['ALL_TOUCHED=TRUE'])
+            # pygeo.geoprocessing.clip_dataset_uri(
+            #     self.uri, aoi_uri, dataset_out_uri, assert_projections=False)
+            return Raster.from_tempfile(dataset_out_uri)
+        except:
+            os.remove(dataset_out_uri)
 
-        return Raster.from_tempfile(dataset_out_uri)
+            ds = ogr.Open(aoi_uri)
+            layer = ds.GetLayer()
+            feature = layer.GetNextFeature()
+            geom = feature.GetGeometryRef()
+            wkt = geom.ExportToWkt()
+            shapely_object = shapely.wkt.loads(wkt)
+            centroid = shapely_object.centroid
+            value = self.get_pixel_value_at_point(centroid)
+
+            if value is None:
+                return None
+
+            px, py = self.get_pixel_coords_at_point(centroid)
+            src_af = self.get_affine()
+            mx1 = src_af.c
+            my1 = src_af.f
+            sign_x = np.sign(src_af.a)
+            sign_y = np.sign(src_af.e)
+            mx2 = (sign_x * px) + mx1
+            my2 = (sign_y * py) + my1
+            affine = Affine(
+                src_af.a,
+                src_af.b,
+                mx2,
+                src_af.d,
+                src_af.e,
+                my2)
+
+            r = Raster.from_array(
+                value,
+                affine,
+                self.get_projection(),
+                self.get_datatype(1),
+                self.get_nodata(1))
+            return r
 
     def reproject(self, proj, resample_method, pixel_size=None):
         if pixel_size is None:
