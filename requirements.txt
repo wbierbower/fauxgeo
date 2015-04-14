@@ -3,3 +3,6 @@ numpy
 affine
 gdal
 pygeoprocessing
+shapely
+pyproj
+pillow

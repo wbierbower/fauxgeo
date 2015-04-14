@@ -19,7 +19,9 @@ requirements = [
     "gdal",
     "shapely",
     "pygeoprocessing",
-    "wheel"
+    "wheel",
+    "pyproj",
+    "pillow"
 ]
 
 test_requirements = [
@@ -30,6 +32,8 @@ test_requirements = [
     "shapely",
     "pygeoprocessing",
     "wheel",
+    "pyproj",
+    "pillow",
     "nose",
     "coverage"
 ]
