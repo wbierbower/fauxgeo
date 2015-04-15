@@ -330,7 +330,7 @@ class Raster(object):
         self._close_dataset()
         return cols
 
-    def get_pixel_value_at_pixel_indices(self, x, y):
+    def get_pixel_value_at_pixel_indices(self, px, py):
         '''
         Position relative to origin regardless of affine transform
         '''
@@ -340,32 +340,42 @@ class Raster(object):
         try:
             # Assertions
             band = self.dataset.GetRasterBand(1)
-            pix = band.ReadAsArray(x, y, 1, 1)
+            pix = band.ReadAsArray(px, py, 1, 1)
         finally:
             self._close_dataset()
 
         return pix
 
-    def get_georef_point_at_pixel_indices(self, x, y):
+    def get_georef_point_at_pixel_indices(self, px, py):
         '''
         Georeferenced point of pixel center
         '''
         a = self.get_affine()
-        gx = (a.a * (x + 0.5)) + (a.b * (y + 0.5)) + a.c
-        gy = (a.e * (y + 0.5)) + (a.d * (y + 0.5)) + a.f
+        gx = (a.a * (px + 0.5)) + (a.b * (py + 0.5)) + a.c
+        gy = (a.e * (py + 0.5)) + (a.d * (px + 0.5)) + a.f
+        return (gx, gy)
+
+    def get_shapely_point_at_pixel_indices(self, px, py):
+        '''
+        Georeferenced point of pixel center
+        '''
+        gx, gy = self.get_georef_point_at_pixel_indices(px, py)
         return shapely.geometry.point.Point(gx, gy)
 
-    def get_pixel_indices_at_georef_point(self, shapely_point):
+    def get_pixel_indices_at_georef_point(self, gx, gy):
         '''this may only apply to non-rotated rasters'''
-        gx, gy = shapely_point.x, shapely_point.y
         gt = self.get_geotransform()
         px = int((gx - gt[0]) / gt[1])
         py = int((gy - gt[3]) / gt[5])
-
         return (px, py)
 
-    def get_pixel_value_at_georef_point(self, shapely_point):
-        px, py = self.get_pixel_indices_at_georef_point(shapely_point)
+    def get_pixel_indices_at_shapely_point(self, shapely_point):
+        '''this may only apply to non-rotated rasters'''
+        return self.get_pixel_indices_at_georef_point(
+            shapely_point.x, shapely_point.y)
+
+    def get_pixel_value_at_georef_point(self, gx, gy):
+        px, py = self.get_pixel_indices_at_georef_point(gx, gy)
         return self.get_pixel_value_at_pixel_indices(px, py)
 
     def get_shape(self):
@@ -611,6 +621,14 @@ class Raster(object):
 
         return Raster.from_tempfile(dataset_out_uri)
 
+    def reproject_georef_point(self, x, y, dst_proj):
+        reproj = functools.partial(
+            pyproj.transform,
+            pyproj.Proj(init="epsg:%i" % self.get_projection()),
+            pyproj.Proj(init="epsg:%i" % dst_proj))
+
+        return reproj(x, y)
+
     def reproject_shapely_object(self, shapely_object, dst_proj):
         reproj = functools.partial(
             pyproj.transform,
@@ -638,13 +656,11 @@ class Raster(object):
         a = np.zeros(shape)
         dst_idxs = [(i, j) for i in range(shape[0]) for j in range(shape[1])]
         src_raster = raster.get_band(1).data
-        print src_raster
         for dst_idx in dst_idxs:
             p = self.get_georef_point_at_pixel_indices(*dst_idx)
-            p2 = self.reproject_shapely_object(p, raster.get_projection())
-            src_idx = self.get_pixel_indices_at_georef_point(p2)
-            print src_idx
-            print src_raster[src_idx]
+            p2 = self.reproject_georef_point(
+                p[0], p[1], raster.get_projection())
+            src_idx = self.get_pixel_indices_at_georef_point(*p2)
             a[dst_idx] = src_raster[src_idx]
 
         r = Raster.from_array(
