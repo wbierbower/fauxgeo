@@ -636,12 +636,16 @@ class Raster(object):
         '''way too slow!'''
         shape = self.get_shape()
         a = np.zeros(shape)
-        idxs = [(i, j) for i in range(shape[0]) for j in range(shape[1])]
-        for idx in idxs:
-            p = self.get_georef_point_at_pixel_indices(*idx)
+        dst_idxs = [(i, j) for i in range(shape[0]) for j in range(shape[1])]
+        src_raster = raster.get_band(1).data
+        print src_raster
+        for dst_idx in dst_idxs:
+            p = self.get_georef_point_at_pixel_indices(*dst_idx)
             p2 = self.reproject_shapely_object(p, raster.get_projection())
-            val = raster.get_pixel_value_at_georef_point(p2)
-            a[idx] = val
+            src_idx = self.get_pixel_indices_at_georef_point(p2)
+            print src_idx
+            print src_raster[src_idx]
+            a[dst_idx] = src_raster[src_idx]
 
         r = Raster.from_array(
             a,
