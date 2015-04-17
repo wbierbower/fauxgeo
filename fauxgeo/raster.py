@@ -96,6 +96,7 @@ class Raster(object):
         string += '\nBand 1:\n' + self.get_band(1).__repr__()
         string += self.get_affine().__repr__()
         string += '\nNoData for Band 1: ' + str(self.get_nodata(1))
+        string += '\nDatatype for Band 1: ' + str(self.get_band(1).dtype)
         string += '\nProjection (EPSG): ' + str(self.get_projection())
         string += '\nuri: ' + self.uri
         string += '\n'
@@ -103,6 +104,13 @@ class Raster(object):
 
     def __len__(self):
         return self.band_count()
+
+    def __neg__(self):
+        def neg_closure(nodata):
+            def neg(x):
+                return np.where((np.not_equal(x, nodata)), np.negative(x), nodata)
+            return neg
+        return self.local_op(None, neg_closure, broadcast=True)
 
     def __mul__(self, raster):
         if type(raster) in [float, int]:
