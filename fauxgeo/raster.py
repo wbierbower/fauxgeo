@@ -278,6 +278,23 @@ class Raster(object):
             else:
                 return False
 
+    def minimum(self, raster):
+        if type(raster) in [float, int]:
+            # Implement broadcast operation
+            def min_closure(nodata):
+                def mini(x):
+                    f = np.where((np.less(x, raster)), x, raster)
+                    return np.where((np.not_equal(x, nodata)), f(x), nodata)
+                return mini
+            return self.local_op(raster, min_closure, broadcast=True)
+        else:
+            def min_closure(nodata):
+                def mini(x, y):
+                    f = np.where((np.less(x, y)), x, y)
+                    return np.where((np.not_equal(x, nodata)) & (np.not_equal(y, nodata)), f(x, y), nodata)
+                return mini
+            return self.local_op(raster, min_closure)
+
     def __getitem__(self):
         pass  # return numpy slice?  Raster object with sliced numpy array?
 
