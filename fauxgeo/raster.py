@@ -283,14 +283,14 @@ class Raster(object):
             # Implement broadcast operation
             def min_closure(nodata):
                 def mini(x):
-                    f = np.where((np.less(x, raster)), x, raster)
+                    def f(x): return np.where((np.less(x, raster)), x, raster)
                     return np.where((np.not_equal(x, nodata)), f(x), nodata)
                 return mini
             return self.local_op(raster, min_closure, broadcast=True)
         else:
             def min_closure(nodata):
                 def mini(x, y):
-                    f = np.where((np.less(x, y)), x, y)
+                    def f(x, y): return np.where((np.less(x, y)), x, y)
                     return np.where((np.not_equal(x, nodata)) & (np.not_equal(y, nodata)), f(x, y), nodata)
                 return mini
             return self.local_op(raster, min_closure)
