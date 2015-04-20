@@ -578,7 +578,6 @@ class Raster(object):
         src_nodata_val = self.get_nodata(1)
         array[array == src_nodata_val] = nodata_val
 
-        array = self.get_band(1)
         affine = self.get_affine()
         proj = self.get_projection()
         return Raster.from_array(array, affine, proj, datatype, nodata_val)
