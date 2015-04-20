@@ -66,37 +66,58 @@ The Raster Class
     raster = Raster.from_file('path/to/geotiff')
 
     raster.uri  # equals '/path/to/geotiff'
+    raster.driver  # e.g. 'GTiff'
+    raster.dataset
+
     raster.get_band(1)  # returns 2d numpy masked array
     raster.get_bands()  # returns 3d numpy masked array
     raster.get_nodata()  # returns nodata value
-    raster.shape()  # returns 2-tuple (rows, cols)
+    raster.get_shape()  # returns 2-tuple (rows, cols)
+    raster.get_projection()
+    raster.get_affine()
+    raster.get_bounding_box()
+    raster.get_cell_area()
 
+    raster2 = raster1.set_datatype(gdal.GDT_Int32)
+    raster2 = raster1.set_nodata(-9999)
+    raster2 = raster1.set_datatype_and_nodata(gdal.GDT_Int32, -9999)
+    
     # Operations
     raster3 = raster1.align(raster2)
     raster3 = raster1.align_to(raster2)
     assert(raster3.is_aligned(raster2))
-    
+
     raster4 = raster3 * raster2
     raster4 = raster3 / raster2
     raster4 = raster3 + raster2
     raster4 = raster3 - raster2
     raster4 = raster3 ** raster2
-    raster4 = raster3 == raster2
 
     raster4 = raster3 * 4.5
-    raster4 = raster3 / 4.5
+    raster4 = 4.5 / raster3
     raster4 = raster3 + 4.5
-    raster4 = raster3 - 4.5
+    raster4 = 4.5 - raster3
     raster4 = raster3 ** 4.5
 
+    raster2 = raster3.minimum(raster2)
+
+    # returns base rasters with same nodata and datatype
+    zeros_raster = raster3.zeros()  
+    ones_raster = raster3.ones()
+
     raster4 = raster3.clip('/path/to/aoi_shapefile')
-    raster4 = raster3.reproject(600613)
+    raster4 = raster3.reproject(epsg_code)
 
     reclass_table = {
         1: 2,
         2: 1
     }
     raster4 = raster3.reclass(reclass_table)
+
+    raster4 = raster3.resize_pixels(pixel_size, resample_method)
+
+    # visualization
+    image = raster4.get_grayscale_image()  # returns PIL Image object
 
     raster.save_raster('/path/to/dst.tif')
     del raster  # cleans up temporary file on object deletion or program exit
