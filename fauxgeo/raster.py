@@ -565,6 +565,12 @@ class Raster(object):
         datatype = self.get_datatype(1)
         return Raster.from_array(array, affine, proj, datatype, nodata_val)
 
+    def set_datatype_and_nodata(self, datatype, nodata_val):
+        array = self.get_band(1)
+        affine = self.get_affine()
+        proj = self.get_projection()
+        return Raster.from_array(array, affine, proj, datatype, nodata_val)
+
     def copy(self, uri=None):
         if not uri:
             uri = pygeo.geoprocessing.temporary_filename()
