@@ -21,7 +21,7 @@ A python library that generates simple OSGeo-supported rasters and vectors.  The
 Requirements
 ------------
 
-fauxgeo 0.1.5 requires
+fauxgeo 0.2.0 requires
 
 * NumPy
 * Matplotlib
@@ -99,7 +99,7 @@ The Raster Class
     raster4 = 4.5 - raster3
     raster4 = raster3 ** 4.5
 
-    raster2 = raster3.minimum(raster2)
+    raster4 = raster3.minimum(raster2)
 
     # returns base rasters with same nodata and datatype
     zeros_raster = raster3.zeros()  
