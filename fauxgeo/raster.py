@@ -795,7 +795,8 @@ class Raster(object):
             reclass_table,
             dataset_out_uri,
             out_datatype,
-            out_nodata)
+            out_nodata,
+            assert_datasets_projected=False)
 
         return Raster.from_tempfile(dataset_out_uri)
 
