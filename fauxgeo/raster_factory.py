@@ -1,6 +1,7 @@
 '''
 RasterFactory Class
 '''
+import random
 
 import numpy as np
 from affine import Affine
@@ -44,6 +45,13 @@ class RasterFactory(object):
 
     def random(self):
         a = np.random.rand(self.rows, self.cols)
+        return self._create_raster(a)
+
+    def random_list(self, l):
+        a = np.array((self.rows, self.cols))
+        for i in xrange(len(a)):
+            for j in xrange(len(a[0])):
+                a[i, j] = random.choice(l)
         return self._create_raster(a)
 
     def horizontal_ramp(self, val1, val2):
