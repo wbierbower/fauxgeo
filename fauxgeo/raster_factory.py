@@ -47,8 +47,8 @@ class RasterFactory(object):
         a = np.random.rand(self.rows, self.cols)
         return self._create_raster(a)
 
-    def random_list(self, l):
-        a = np.array((self.rows, self.cols))
+    def random_from_list(self, l):
+        a = np.zeros((self.rows, self.cols))
         for i in xrange(len(a)):
             for j in xrange(len(a[0])):
                 a[i, j] = random.choice(l)
