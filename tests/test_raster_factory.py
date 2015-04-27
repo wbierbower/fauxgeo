@@ -19,7 +19,7 @@ import gdal
 from fauxgeo.raster_factory import RasterFactory
 
 
-class Test_RasterFactory(unittest.TestCase):
+class TestRasterFactory(unittest.TestCase):
 
     def setUp(self):
         self.shape = (3, 3)

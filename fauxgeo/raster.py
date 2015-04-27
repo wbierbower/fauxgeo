@@ -11,13 +11,14 @@ import gdal
 import ogr
 import osr
 import numpy as np
-from affine import Affine
+# from affine import Affine
 from shapely.geometry import Polygon
 import shapely
 import pyproj
 import PIL
-
 import pygeoprocessing as pygeo
+
+from fauxgeo.affine import Affine
 
 LOGGER = logging.getLogger('Raster Class')
 logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s \
