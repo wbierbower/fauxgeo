@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get install -y python-gdal
   - sudo apt-get install -y libgdal-dev
   - sudo apt-get install -y python-shapely
-  - sudo pip install wheel setuptools cython nose
+  - sudo pip install wheel cython nose
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:  sudo pip install -r requirements --no-deps
