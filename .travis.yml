@@ -10,12 +10,14 @@ before_install:
   - sudo apt-get install -y python-gdal
   - sudo apt-get install -y libgdal-dev
   - sudo apt-get install -y python-numpy
+  - sudo apt-get install -y python-scipy
   - sudo apt-get install -y python-shapely
-  - sudo pip install wheel setuptools cython nose
+  - sudo apt-get install -y python-setuptools
+  - sudo pip install wheel cython nose
   - sudo pip install pygeoprocessing pyproj pillow
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install:  python setup.py install
+install:  
 
 # command to run tests, e.g. python setup.py test
 script: python setup.py test

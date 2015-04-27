@@ -15,7 +15,6 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 requirements = [
     # TODO: put package requirements here
     "numpy",
-    "affine",
     "gdal",
     "shapely",
     "pygeoprocessing",
@@ -27,7 +26,6 @@ requirements = [
 test_requirements = [
     # TODO: put package test requirements here
     "numpy",
-    "affine",
     "gdal",
     "shapely",
     "pygeoprocessing",

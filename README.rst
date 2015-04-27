@@ -23,7 +23,8 @@ Requirements
 
 fauxgeo 0.2.0 requires
 
-* NumPy
+* Numpy
+* Scipy
 * Matplotlib
 * GDAL
 * affine == 1.0
@@ -41,7 +42,6 @@ Features
 * Raster Class
 * RasterFactory Class
 * Vector Class
-* VectorFactory Class
 
 Usage
 -----

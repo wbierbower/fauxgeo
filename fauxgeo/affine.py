@@ -28,7 +28,7 @@ class Affine(object):
             return False
 
     @classmethod
-    def identity():
+    def identity(self):
         return Affine(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 
     @ classmethod
