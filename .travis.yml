@@ -1,0 +1,25 @@
+# Config file for automatic testing at travis-ci.org
+
+language: python
+
+python:
+  - "2.6"
+  - "2.7"
+
+before_install:
+  - sudo apt-get install -y python-gdal
+  - sudo apt-get install -y libgdal-dev
+  - sudo apt-get install -y python-numpy
+  - sudo apt-get install -y python-shapely
+  - sudo pip install wheel setuptools cython nose
+  - sudo pip install pyproj pillow
+  - sudo pip install pygeoprocessing --no-deps
+
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install:  python setup.py install
+
+# command to run tests, e.g. python setup.py test
+script: python setup.py test
+
+notifications:
+    email: false
