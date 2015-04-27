@@ -13,7 +13,8 @@ import os
 import tempfile
 
 import numpy as np
-from affine import Affine
+# from affine import Affine
+from fauxgeo.affine import Affine
 import gdal
 
 from fauxgeo import Raster

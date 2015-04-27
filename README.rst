@@ -27,7 +27,6 @@ fauxgeo 0.2.0 requires
 * Scipy
 * Matplotlib
 * GDAL
-* affine == 1.0
 
 Installation
 ------------
