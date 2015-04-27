@@ -12,7 +12,8 @@ before_install:
   - sudo apt-get install -y python-numpy
   - sudo apt-get install -y python-shapely
   - sudo pip install wheel setuptools cython nose
-  - sudo pip install pygeoprocessing pyproj pillow
+  - sudo pip install pyproj pillow
+  - sudo pip install pygeoprocessing --no-deps
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:  python setup.py install
