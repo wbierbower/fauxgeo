@@ -3,6 +3,12 @@
 History
 =======
 
+0.2.3 (2015-04-28)
+------------------
+
+* Test cases added
+* Reverse math operations added to Raster class
+
 0.2.0 (2015-04-21)
 ------------------
 
