@@ -339,15 +339,19 @@ class Raster(object):
         raise NotImplementedError
 
     def ones(self):
-        return self.zeros() + 1
+        def ones_closure(nodata):
+            def ones(x):
+                return np.where(x == x, 1, nodata)
+            return ones
+        return self.local_op(0, ones_closure, broadcast=True)
+
 
     def zeros(self):
-        array = self.get_band(1).data * 0
-        affine = self.get_affine()
-        proj = self.get_projection()
-        datatype = self.get_datatype(1)
-        nodata_val = self.get_nodata(1)
-        return Raster.from_array(array, affine, proj, datatype, nodata_val)
+        def zeros_closure(nodata):
+            def zeros(x):
+                return np.where(x == x, 0, nodata)
+            return zeros
+        return self.local_op(0, zeros_closure, broadcast=True)
 
     def band_count(self):
         self._open_dataset()
@@ -546,30 +550,112 @@ class Raster(object):
         raise NotImplementedError
 
     def set_datatype(self, datatype):
-        array = self.get_band(1)
-        affine = self.get_affine()
-        proj = self.get_projection()
-        nodata_val = self.get_nodata(1)
-        return Raster.from_array(array, affine, proj, datatype, nodata_val)
+
+        def pixel_op_closure(nodata):
+            def copy(x):
+                return np.where(x == x, x, nodata)
+            return copy
+
+        bounding_box_mode = "dataset"
+        resample_method = "nearest"
+
+        dataset_uri_list = [self.uri]
+        resample_list = [resample_method]
+
+        nodata = self.get_nodata(1)
+        pixel_op = pixel_op_closure(nodata)
+        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        datatype_out = datatype
+        nodata_out = nodata
+        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+
+        pygeo.geoprocessing.vectorize_datasets(
+            dataset_uri_list,
+            pixel_op,
+            dataset_out_uri,
+            datatype_out,
+            nodata_out,
+            pixel_size_out,
+            bounding_box_mode,
+            resample_method_list=resample_list,
+            dataset_to_align_index=0,
+            dataset_to_bound_index=0,
+            assert_datasets_projected=False,
+            vectorize_op=False)
+
+        return Raster.from_tempfile(dataset_out_uri)
 
     def set_nodata(self, nodata_val):
-        array = self.get_band(1).data
-        src_nodata_val = self.get_nodata(1)
-        array[array == src_nodata_val] = nodata_val
 
-        affine = self.get_affine()
-        proj = self.get_projection()
-        datatype = self.get_datatype(1)
-        return Raster.from_array(array, affine, proj, datatype, nodata_val)
+        def pixel_op_closure(old_nodata, new_nodata):
+            def copy(x):
+                return np.where(x == old_nodata, new_nodata, x)
+            return copy
+
+        bounding_box_mode = "dataset"
+        resample_method = "nearest"
+
+        dataset_uri_list = [self.uri]
+        resample_list = [resample_method]
+
+        old_nodata = self.get_nodata(1)
+        pixel_op = pixel_op_closure(old_nodata, nodata_val)
+        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(self.uri)
+        nodata_out = nodata_val
+        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+
+        pygeo.geoprocessing.vectorize_datasets(
+            dataset_uri_list,
+            pixel_op,
+            dataset_out_uri,
+            datatype_out,
+            nodata_out,
+            pixel_size_out,
+            bounding_box_mode,
+            resample_method_list=resample_list,
+            dataset_to_align_index=0,
+            dataset_to_bound_index=0,
+            assert_datasets_projected=False,
+            vectorize_op=False)
+
+        return Raster.from_tempfile(dataset_out_uri)
 
     def set_datatype_and_nodata(self, datatype, nodata_val):
-        array = self.get_band(1).data
-        src_nodata_val = self.get_nodata(1)
-        array[array == src_nodata_val] = nodata_val
 
-        affine = self.get_affine()
-        proj = self.get_projection()
-        return Raster.from_array(array, affine, proj, datatype, nodata_val)
+        def pixel_op_closure(old_nodata, new_nodata):
+            def copy(x):
+                return np.where(x == old_nodata, new_nodata, x)
+            return copy
+
+        bounding_box_mode = "dataset"
+        resample_method = "nearest"
+
+        dataset_uri_list = [self.uri]
+        resample_list = [resample_method]
+
+        old_nodata = self.get_nodata(1)
+        pixel_op = pixel_op_closure(old_nodata, nodata_val)
+        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        datatype_out = datatype
+        nodata_out = nodata_val
+        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+
+        pygeo.geoprocessing.vectorize_datasets(
+            dataset_uri_list,
+            pixel_op,
+            dataset_out_uri,
+            datatype_out,
+            nodata_out,
+            pixel_size_out,
+            bounding_box_mode,
+            resample_method_list=resample_list,
+            dataset_to_align_index=0,
+            dataset_to_bound_index=0,
+            assert_datasets_projected=False,
+            vectorize_op=False)
+
+        return Raster.from_tempfile(dataset_out_uri)
 
     def copy(self, uri=None):
         if not uri:
@@ -810,7 +896,7 @@ class Raster(object):
             assert(self.is_aligned(raster))
             try:
                 assert(self.get_nodata(1) == raster.get_nodata(1))
-            except:
+            except AssertionError:
                 LOGGER.error("Rasters have different nodata values: %f, %f" % (
                     self.get_nodata(1), raster.get_nodata(1)))
                 raise AssertionError

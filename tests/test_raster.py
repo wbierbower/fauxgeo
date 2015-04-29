@@ -282,5 +282,92 @@ class TestRasterReclassMaskedValues(unittest.TestCase):
         assert(new_raster.get_band(1)[0, 0] == new_value)
 
 
+class TestRasterZeros(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_zeros(self):
+        raster = self.factory.alternating(-9999, 2.0)
+        zero_raster = raster.zeros()
+        assert(zero_raster.get_band(1)[0, 0] == 0)
+
+
+class TestRasterOnes(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_zeros(self):
+        raster = self.factory.alternating(-9999, 2.0)
+        ones_raster = raster.ones()
+        assert(ones_raster.get_band(1)[0, 0] == 1)
+
+
+class TestRasterSetDatatype(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_set_datatype(self):
+        raster = self.factory.alternating(-9999, 2.0)
+        new_raster = raster.set_datatype(gdal.GDT_Int16)
+        assert(new_raster.get_datatype(1) == gdal.GDT_Int16)
+
+
+class TestRasterSetNoData(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_set_nodata(self):
+        raster = self.factory.alternating(-9999, 2.0)
+        new_raster = raster.set_nodata(100)
+        assert(new_raster.get_nodata(1) == 100)
+        assert(new_raster.get_band(1).data[0, 0] == 100.0)
+
+
+class TestRasterSetDatatypeAndNoData(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_set_nodata(self):
+        raster = self.factory.alternating(-9999, 2.0)
+        new_raster = raster.set_datatype_and_nodata(gdal.GDT_Int16, 100)
+        assert(new_raster.get_datatype(1) == gdal.GDT_Int16)
+        assert(new_raster.get_nodata(1) == 100)
+        assert(new_raster.get_band(1).data[0, 0] == 100)
+
 if __name__ == '__main__':
     unittest.main()
