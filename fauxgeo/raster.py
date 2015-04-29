@@ -751,6 +751,13 @@ class Raster(object):
 
         return Raster.from_tempfile(output_uri)
 
+    def reclass_masked_values(self, mask_raster, new_value):
+        def reclass_masked_closure(nodata):
+            def reclass(x, y):
+                return np.where((np.not_equal(y, 0)), x, new_value)
+            return reclass
+        return self.local_op(mask_raster, reclass_masked_closure)
+
     def sample_from_raster(self, raster):
         '''way too slow!'''
         shape = self.get_shape()

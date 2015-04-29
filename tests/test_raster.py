@@ -6,6 +6,8 @@ test_raster
 ----------------------------------
 
 Tests for Raster class.
+
+python -m unittest test_raster
 """
 
 import unittest
@@ -260,6 +262,25 @@ class TestRasterResizePixels(unittest.TestCase):
         a = self.factory.alternating(1.0, 2.0)
         b = a.resize_pixels(0.5, 'nearest')
         assert(b.get_shape() == (8, 8))
+
+class TestRasterReclassMaskedValues(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_reclass_masked_values(self):
+        new_value = 20
+        masked_raster = self.factory.alternating(0, 1.0)
+        raster = self.factory.uniform(np.nan)
+        new_raster = raster.reclass_masked_values(masked_raster, new_value)
+        assert(new_raster.get_band(1)[0, 0] == new_value)
+
 
 if __name__ == '__main__':
     unittest.main()
