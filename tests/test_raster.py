@@ -420,8 +420,8 @@ class TestRasterMinimum(unittest.TestCase):
         assert(min_raster.get_band(1).data[0, 1] == -9999)
 
     def test_fminimum(self):
-        raster1 = self.factory.alternating(1.0, 2.0)
-        raster2 = self.factory.alternating(2.0, -9999)
+        raster1 = self.factory.alternating(2.0, float('NaN'))
+        raster2 = self.factory.alternating(1.0, 2.0)
         min_raster = raster1.fminimum(raster2)
         assert(min_raster.get_band(1).data[0, 0] == 1)
         assert(min_raster.get_band(1).data[0, 1] == 2)

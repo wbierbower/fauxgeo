@@ -289,14 +289,14 @@ class Raster(object):
             # Implement broadcast operation
             def min_closure(nodata):
                 def mini(x):
-                    def f(x): return np.where((np.minimum(x, raster)), x, raster)
+                    def f(x): return np.where(np.not_equal(x, raster), np.minimum(x, raster), np.minimum(x, raster))
                     return np.where((np.not_equal(x, nodata)), f(x), nodata)
                 return mini
             return self.local_op(raster, min_closure, broadcast=True)
         else:
             def min_closure(nodata):
                 def mini(x, y):
-                    def f(x, y): return np.where((np.minimum(x, y)), x, y)
+                    def f(x, y): return np.where(np.not_equal(x, y), np.minimum(x, y), np.minimum(x, y))
                     return np.where((np.not_equal(x, nodata)) & (np.not_equal(y, nodata)), f(x, y), nodata)
                 return mini
             return self.local_op(raster, min_closure)
@@ -306,15 +306,15 @@ class Raster(object):
             # Implement broadcast operation
             def min_closure(nodata):
                 def mini(x):
-                    def f(x): return np.where((np.fmin(x, raster)), x, raster)
+                    def f(x): return np.where(np.not_equal(x, raster), np.fmin(x, raster), np.fmin(x, raster))
                     return np.where((np.not_equal(x, nodata)), f(x), nodata)
                 return mini
             return self.local_op(raster, min_closure, broadcast=True)
         else:
             def min_closure(nodata):
                 def mini(x, y):
-                    def f(x, y): return np.where((np.fmin(x, y)), x, y)
-                    return np.where((np.not_equal(x, nodata)) | (np.not_equal(y, nodata)), f(x, y), nodata)
+                    def f(x, y): return np.where((np.not_equal(x, y)), np.fmin(x, y), np.fmin(x, y))
+                    return np.where((np.not_equal(x, nodata)) & (np.not_equal(y, nodata)), f(x, y), nodata)
                 return mini
             return self.local_op(raster, min_closure)
 
