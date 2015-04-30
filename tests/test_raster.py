@@ -402,6 +402,7 @@ class TestRasterStats(unittest.TestCase):
         print raster
         assert(raster.sum() == 8.0)
 
+
 class TestRasterMinimum(unittest.TestCase):
     def setUp(self):
         self.shape = (4, 4)
@@ -426,6 +427,22 @@ class TestRasterMinimum(unittest.TestCase):
         min_raster = raster1.fminimum(raster2)
         assert(min_raster.get_band(1).data[0, 0] == 1)
         assert(min_raster.get_band(1).data[0, 1] == 2)
+
+
+class TestRasterUnique(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Int16
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_unique(self):
+        raster = self.factory.horizontal_ramp(1, 4)
+        assert(raster.unique() == [1, 2, 3, 4])
 
 
 if __name__ == '__main__':

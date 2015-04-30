@@ -381,6 +381,10 @@ class Raster(object):
         _, _, _, std = pygeo.get_statistics_from_uri(self.uri)
         return std
 
+    def unique(self):
+        unique_vals_list = pygeo.unique_raster_values_uri(self.uri)
+        return unique_vals_list
+
     def ones(self):
         def ones_closure(nodata):
             def ones(x):
