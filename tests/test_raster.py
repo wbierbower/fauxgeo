@@ -399,6 +399,7 @@ class TestRasterStats(unittest.TestCase):
 
     def test_sum(self):
         raster = self.factory.alternating(1.0, -9999)
+        print raster
         assert(raster.sum() == 8.0)
 
 class TestRasterMinimum(unittest.TestCase):

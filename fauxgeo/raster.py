@@ -18,6 +18,7 @@ import pyproj
 import PIL
 import pygeoprocessing as pygeo
 
+from fauxgeo.vector import Vector
 from fauxgeo.affine import Affine
 
 LOGGER = logging.getLogger('Raster Class')
@@ -356,9 +357,9 @@ class Raster(object):
         raise NotImplementedError
 
     def sum(self):
-        # pygeo.calculate_raster_stats_uri(self.uri)
-        # mini, maxi, mean, stddev = pygeo.get_statistics_from_uri(self.uri)
-        raise NotImplementedError
+        vector = Vector.from_shapely(self.get_aoi(), self.get_projection())
+        t = pygeo.aggregate_raster_values_uri(self.uri, vector.uri)
+        return t.total[9999]
 
     def min(self):
         pygeo.calculate_raster_stats_uri(self.uri)
