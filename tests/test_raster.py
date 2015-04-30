@@ -369,5 +369,63 @@ class TestRasterSetDatatypeAndNoData(unittest.TestCase):
         assert(new_raster.get_nodata(1) == 100)
         assert(new_raster.get_band(1).data[0, 0] == 100)
 
+
+class TestRasterStats(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_min(self):
+        raster = self.factory.alternating(1.0, 2.0)
+        assert(raster.min() == 1.0)
+
+    def test_max(self):
+        raster = self.factory.alternating(1.0, 2.0)
+        assert(raster.max() == 2.0)
+
+    def test_mean(self):
+        raster = self.factory.alternating(1.0, 2.0)
+        assert(raster.mean() == 1.5)
+
+    def test_std(self):
+        raster = self.factory.uniform(1.0)
+        assert(raster.std() == 0.0)
+
+    def test_sum(self):
+        raster = self.factory.alternating(1.0, -9999)
+        assert(raster.sum() == 8.0)
+
+class TestRasterMinimum(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_minimum(self):
+        raster1 = self.factory.alternating(1.0, 2.0)
+        raster2 = self.factory.alternating(2.0, -9999)
+        min_raster = raster1.minimum(raster2)
+        assert(min_raster.get_band(1).data[0, 0] == 1)
+        assert(min_raster.get_band(1).data[0, 1] == -9999)
+
+    def test_fminimum(self):
+        raster1 = self.factory.alternating(1.0, 2.0)
+        raster2 = self.factory.alternating(2.0, -9999)
+        min_raster = raster1.fminimum(raster2)
+        assert(min_raster.get_band(1).data[0, 0] == 1)
+        assert(min_raster.get_band(1).data[0, 1] == 2)
+
+
 if __name__ == '__main__':
     unittest.main()

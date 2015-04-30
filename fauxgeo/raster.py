@@ -289,15 +289,32 @@ class Raster(object):
             # Implement broadcast operation
             def min_closure(nodata):
                 def mini(x):
-                    def f(x): return np.where((np.less(x, raster)), x, raster)
+                    def f(x): return np.where((np.minimum(x, raster)), x, raster)
                     return np.where((np.not_equal(x, nodata)), f(x), nodata)
                 return mini
             return self.local_op(raster, min_closure, broadcast=True)
         else:
             def min_closure(nodata):
                 def mini(x, y):
-                    def f(x, y): return np.where((np.less(x, y)), x, y)
+                    def f(x, y): return np.where((np.minimum(x, y)), x, y)
                     return np.where((np.not_equal(x, nodata)) & (np.not_equal(y, nodata)), f(x, y), nodata)
+                return mini
+            return self.local_op(raster, min_closure)
+
+    def fminimum(self, raster):
+        if type(raster) in [float, int]:
+            # Implement broadcast operation
+            def min_closure(nodata):
+                def mini(x):
+                    def f(x): return np.where((np.fmin(x, raster)), x, raster)
+                    return np.where((np.not_equal(x, nodata)), f(x), nodata)
+                return mini
+            return self.local_op(raster, min_closure, broadcast=True)
+        else:
+            def min_closure(nodata):
+                def mini(x, y):
+                    def f(x, y): return np.where((np.fmin(x, y)), x, y)
+                    return np.where((np.not_equal(x, nodata)) | (np.not_equal(y, nodata)), f(x, y), nodata)
                 return mini
             return self.local_op(raster, min_closure)
 
@@ -338,13 +355,37 @@ class Raster(object):
     def get_heatmap_image(self):
         raise NotImplementedError
 
+    def sum(self):
+        # pygeo.calculate_raster_stats_uri(self.uri)
+        # mini, maxi, mean, stddev = pygeo.get_statistics_from_uri(self.uri)
+        raise NotImplementedError
+
+    def min(self):
+        pygeo.calculate_raster_stats_uri(self.uri)
+        mini, _, _, _ = pygeo.get_statistics_from_uri(self.uri)
+        return mini
+
+    def max(self):
+        pygeo.calculate_raster_stats_uri(self.uri)
+        _, maxi, _, _ = pygeo.get_statistics_from_uri(self.uri)
+        return maxi
+
+    def mean(self):
+        pygeo.calculate_raster_stats_uri(self.uri)
+        _, _, mean, _ = pygeo.get_statistics_from_uri(self.uri)
+        return mean
+
+    def std(self):
+        pygeo.calculate_raster_stats_uri(self.uri)
+        _, _, _, std = pygeo.get_statistics_from_uri(self.uri)
+        return std
+
     def ones(self):
         def ones_closure(nodata):
             def ones(x):
                 return np.where(x == x, 1, nodata)
             return ones
         return self.local_op(0, ones_closure, broadcast=True)
-
 
     def zeros(self):
         def zeros_closure(nodata):
