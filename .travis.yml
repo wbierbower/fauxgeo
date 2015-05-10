@@ -7,13 +7,16 @@ python:
   - "2.7"
 
 before_install:
+  - sudo apt-get update
   - sudo apt-get install -y build-essential
   - sudo apt-get install -y python-setuptools
+  - sudo apt-get install -y python-dev
   - sudo apt-get install -y python-numpy
   - sudo apt-get install -y python-scipy
   - sudo apt-get install -y python-gdal
   - sudo apt-get install -y libgdal-dev
   - sudo apt-get install -y python-shapely
+  - sudo easy_install pip
   - sudo pip install wheel cython nose
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
