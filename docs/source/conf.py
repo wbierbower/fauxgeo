@@ -21,9 +21,9 @@ import shlex
 # built documents.
 #
 # The short X.Y version.
-version = 'dev'
+version = '0.2.5'
 # The full version, including alpha/beta/rc tags.
-release = 'dev'
+release = '0.2.5'
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
