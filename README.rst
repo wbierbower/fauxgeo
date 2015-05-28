@@ -12,8 +12,6 @@ Fauxgeo
         :target: https://readthedocs.org/projects/fauxgeo/?badge=latest
         :alt: Documentation Status
 
-`Documentation at Read the Docs <http://fauxgeo.readthedocs.org/en/latest/>`_
-
 A python library that generates simple OSGeo-supported rasters and vectors.  The primary purpose for this library is to help test geoprocessing functions.
 
 * Free software: BSD license
@@ -185,7 +183,6 @@ Planning
 * Add basic visualization functionality
 
 * Raster Operations
-
     * Reclass
     * Overlay - intersection, union, clip
     * Dissolve
