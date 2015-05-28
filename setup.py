@@ -38,7 +38,7 @@ test_requirements = [
 
 setup(
     name='fauxgeo',
-    version='0.2.0',
+    version='dev',
     description='A python library that generates fake geospatial data',
     long_description=readme + '\n\n' + history,
     author='Will B',
