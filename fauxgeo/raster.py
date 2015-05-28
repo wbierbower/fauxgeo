@@ -34,7 +34,7 @@ class Raster(object):
         self.dataset = None
 
     @classmethod
-    def from_array(self, array, affine, proj, datatype, nodata_val, driver='GTiff'):
+    def from_array(self, array, affine, proj, datatype, nodata_val, driver='GTiff', filepath=None):
         if len(array.shape) is 2:
             num_bands = 1
         elif len(array.shape) is 3:
@@ -42,7 +42,10 @@ class Raster(object):
         else:
             raise ValueError
 
-        dataset_uri = pygeo.geoprocessing.temporary_filename()
+        if filepath:
+            dataset_uri = filepath
+        else:
+            dataset_uri = pygeo.geoprocessing.temporary_filename()
         rows = array.shape[0]
         cols = array.shape[1]
 
@@ -67,7 +70,8 @@ class Raster(object):
         dataset = None
         driver = None
 
-        return Raster(dataset_uri, driver=driver)
+        if not filepath:
+            return Raster(dataset_uri, driver=driver)
 
     @classmethod
     def from_file(self, uri, driver='GTiff'):
@@ -319,16 +323,19 @@ class Raster(object):
                 return mini
             return self.local_op(raster, min_closure)
 
-    def __getitem__(self):
-        pass  # return numpy slice?  Raster object with sliced numpy array?
+    def __getitem__(self, key):
+        arr = self.get_band(1)
+        return arr[key]
 
-    def __setitem__(self):
-        pass  # set numpy values to raster
+    def __setitem__(self, key, item):
+        arr = self.get_band(1)
+        arr[key] = item
+        self.set_band(1, arr)
 
-    def __getslice__(self):
+    def getslice(self, a, b, c):
         pass
 
-    def __setslice__(self):
+    def setslice(self, a, b, c):
         pass
 
     def __iter__(self):
@@ -589,8 +596,18 @@ class Raster(object):
         a = self.get_affine()
         return abs((a.a * a.e))
 
-    def set_band(self, masked_array):
-        raise NotImplementedError
+    def set_band(self, band_num, masked_array):
+        affine = self.get_affine()
+        proj = self.get_projection()
+        datatype = self.get_datatype(band_num)
+        nodata_val = masked_array.fill_value
+        if np.issubdtype(nodata_val, int):
+            nodata_val = nodata_val.astype(int)
+        else:
+            nodata_val = nodata_val.astype(float)
+        uri = self.uri
+        Raster.from_array(
+            masked_array, affine, proj, datatype, nodata_val, filepath=uri)
 
     def set_bands(self, array):
         raise NotImplementedError

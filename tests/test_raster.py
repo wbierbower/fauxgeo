@@ -263,6 +263,7 @@ class TestRasterResizePixels(unittest.TestCase):
         b = a.resize_pixels(0.5, 'nearest')
         assert(b.get_shape() == (8, 8))
 
+
 class TestRasterReclassMaskedValues(unittest.TestCase):
     def setUp(self):
         self.shape = (4, 4)
@@ -314,6 +315,24 @@ class TestRasterOnes(unittest.TestCase):
         raster = self.factory.alternating(-9999, 2.0)
         ones_raster = raster.ones()
         assert(ones_raster.get_band(1)[0, 0] == 1)
+
+
+class TestRasterSetBand(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float64
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_set_band(self):
+        raster = self.factory.alternating(-9999, 2.0)
+        new_array = np.ma.ones((4, 4), fill_value=0)
+        raster.set_band(1, new_array)
+        assert(raster[0][0] == 1)
 
 
 class TestRasterSetDatatype(unittest.TestCase):
@@ -399,7 +418,6 @@ class TestRasterStats(unittest.TestCase):
 
     def test_sum(self):
         raster = self.factory.alternating(1.0, -9999)
-        print raster
         assert(raster.sum() == 8.0)
 
 
@@ -443,6 +461,28 @@ class TestRasterUnique(unittest.TestCase):
     def test_unique(self):
         raster = self.factory.horizontal_ramp(1, 4)
         assert(raster.unique() == [1, 2, 3, 4])
+
+
+class TestRasterSlice(unittest.TestCase):
+    def setUp(self):
+        self.shape = (10, 10)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Int16
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_get_slice(self):
+        raster = self.factory.alternating(0, 1)
+        a = raster[1:3]
+        assert(a[0][0] == 1)
+
+    def test_set_slice(self):
+        raster = self.factory.alternating(0, 1)
+        raster[1:9:2, 1:9:2] = 2
+        assert(raster[1][3] == 2)
 
 
 if __name__ == '__main__':

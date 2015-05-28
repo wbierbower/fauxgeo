@@ -12,6 +12,7 @@ Fauxgeo
         :target: https://readthedocs.org/projects/fauxgeo/?badge=latest
         :alt: Documentation Status
 
+`Documentation at Read the Docs <http://fauxgeo.readthedocs.org/en/latest/>`_
 
 A python library that generates simple OSGeo-supported rasters and vectors.  The primary purpose for this library is to help test geoprocessing functions.
 
@@ -27,6 +28,8 @@ fauxgeo 0.2.0 requires
 * Scipy
 * Matplotlib
 * GDAL
+* PyGeoprocessing
+* Shapely
 
 Installation
 ------------
@@ -50,7 +53,6 @@ The Raster Class
 .. code:: python
 
     import numpy as np
-    from affine import Affine
     import gdal
 
     # set arguments
@@ -98,6 +100,10 @@ The Raster Class
     raster4 = 4.5 - raster3
     raster4 = raster3 ** 4.5
 
+    # get and set slices of a raster
+    print raster4[1:9:2]
+    raster4[1:9:2] = 6
+
     raster4 = raster3.minimum(raster2)
 
     # returns base rasters with same nodata and datatype
@@ -126,7 +132,6 @@ The RasterFactory Class
 
 .. code:: python
 
-    from affine import Affine
     import gdal
 
     # set arguments
@@ -146,7 +151,7 @@ The RasterFactory Class
     test_raster_4 = factory.horizontal_ramp(1, 10)  # interpolated from 1 to 10 across columns
     test_raster_5 = factory.vertical_ramp(1, 10)  # interpolated from 1 to 10 across rows
 
-The Vector Class
+The Vector Class (a work in progress...)
 
 .. code:: python
 
@@ -178,7 +183,9 @@ Planning
 --------
 
 * Add basic visualization functionality
+
 * Raster Operations
+
     * Reclass
     * Overlay - intersection, union, clip
     * Dissolve
