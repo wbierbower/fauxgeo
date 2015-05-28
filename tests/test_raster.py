@@ -484,6 +484,17 @@ class TestRasterSlice(unittest.TestCase):
         raster[1:9:2, 1:9:2] = 2
         assert(raster[1][3] == 2)
 
+    def test_set_slice(self):
+        raster = self.factory.alternating(0, 1)
+        raster[1:3, 1:3] = (np.ones((2, 2)) * 5)
+        assert(raster[1][1] == 5)
+
+    def test_reclass_slice(self):
+        raster = self.factory.alternating(0, 1)
+        block = raster[1:3, 1:3]
+        block[block == 1] = 0
+        raster[1:3, 1:3] = block
+        assert(raster[1][1] == 0)
 
 if __name__ == '__main__':
     unittest.main()

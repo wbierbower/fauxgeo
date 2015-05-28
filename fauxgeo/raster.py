@@ -14,7 +14,7 @@ import numpy as np
 # from affine import Affine
 from shapely.geometry import Polygon
 import shapely
-import pyproj
+# import pyproj
 import PIL
 import pygeoprocessing as pygeo
 
@@ -871,21 +871,21 @@ class Raster(object):
 
         return Raster.from_tempfile(dataset_out_uri)
 
-    def reproject_georef_point(self, x, y, dst_proj):
-        reproj = functools.partial(
-            pyproj.transform,
-            pyproj.Proj(init="epsg:%i" % self.get_projection()),
-            pyproj.Proj(init="epsg:%i" % dst_proj))
+    # def reproject_georef_point(self, x, y, dst_proj):
+    #     reproj = functools.partial(
+    #         pyproj.transform,
+    #         pyproj.Proj(init="epsg:%i" % self.get_projection()),
+    #         pyproj.Proj(init="epsg:%i" % dst_proj))
 
-        return reproj(x, y)
+    #     return reproj(x, y)
 
-    def reproject_shapely_object(self, shapely_object, dst_proj):
-        reproj = functools.partial(
-            pyproj.transform,
-            pyproj.Proj(init="epsg:%i" % self.get_projection()),
-            pyproj.Proj(init="epsg:%i" % dst_proj))
+    # def reproject_shapely_object(self, shapely_object, dst_proj):
+    #     reproj = functools.partial(
+    #         pyproj.transform,
+    #         pyproj.Proj(init="epsg:%i" % self.get_projection()),
+    #         pyproj.Proj(init="epsg:%i" % dst_proj))
 
-        return shapely.ops.transform(reproj, shapely_object)
+    #     return shapely.ops.transform(reproj, shapely_object)
 
     def resize_pixels(self, pixel_size, resample_method):
         bounding_box = self.get_bounding_box()

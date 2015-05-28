@@ -3,5 +3,4 @@ numpy
 gdal
 pygeoprocessing
 shapely
-pyproj
 pillow

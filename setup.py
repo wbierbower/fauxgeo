@@ -19,7 +19,7 @@ requirements = [
     "shapely",
     "pygeoprocessing",
     "wheel",
-    "pyproj",
+    # "pyproj",
     "pillow"
 ]
 
@@ -30,7 +30,7 @@ test_requirements = [
     "shapely",
     "pygeoprocessing",
     "wheel",
-    "pyproj",
+    # "pyproj",
     "pillow",
     "nose",
     "coverage"
