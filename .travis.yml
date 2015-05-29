@@ -19,9 +19,10 @@ before_install:
   - sudo easy_install pip
   - sudo pip install wheel cython nose
   - sudo pip install pygeoprocessing
+  - sudo pip install pillow
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install:  sudo pip install -r requirements.txt --no-deps
+# install:  sudo pip install -r requirements.txt --no-deps
 
 # command to run tests, e.g. python setup.py test
 script: python setup.py test
