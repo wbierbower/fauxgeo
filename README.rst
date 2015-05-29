@@ -53,7 +53,7 @@ The Raster Class
 
     # set arguments
     array = np.ones((3, 3))
-    affine = Affine.identity()
+    affine = Raster.create_simple_affine(0, 0, 1, 1)
     proj = 4326
     datatype = gdal.GDT_Float64
     nodata_val = -9999.0
