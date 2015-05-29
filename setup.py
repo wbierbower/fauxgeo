@@ -17,7 +17,7 @@ requirements = [
     "numpy",
     "gdal",
     "shapely",
-    "pygeoprocessing",
+    # "pygeoprocessing",
     "wheel",
     # "pyproj",
     "pillow"
@@ -28,9 +28,8 @@ test_requirements = [
     "numpy",
     "gdal",
     "shapely",
-    "pygeoprocessing",
+    # "pygeoprocessing",
     "wheel",
-    # "pyproj",
     "pillow",
     "nose",
     "coverage"
