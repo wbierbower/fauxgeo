@@ -4,7 +4,6 @@ RasterFactory Class
 import random
 
 import numpy as np
-# from affine import Affine
 
 from fauxgeo.affine import Affine
 from fauxgeo.raster import Raster

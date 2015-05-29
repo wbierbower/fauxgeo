@@ -3,14 +3,17 @@ Vector Class
 '''
 
 import os
-import tempfile
 import shutil
 
-import gdal
-import ogr
-import osr
-import numpy as np
-from affine import Affine
+try:
+    import gdal
+    import ogr
+    import osr
+except:
+    from osgeo import gdal
+    from osgeo import ogr
+    from osgeo import osr
+
 from shapely.geometry import *
 import shapely.wkt
 import pygeoprocessing as pygeo
