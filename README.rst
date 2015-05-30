@@ -163,7 +163,6 @@ The Vector Class (a work in progress...)
     vector.save_vector('/path/to/dst.shp')
     del vector
 
-
 Tests
 -----
 
