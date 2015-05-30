@@ -179,7 +179,6 @@ Planning
 --------
 
 * Add basic visualization functionality
-
 * Raster Operations
     * Reclass
     * Overlay - intersection, union, clip
