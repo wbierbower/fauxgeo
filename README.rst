@@ -5,8 +5,8 @@ Fauxgeo
 .. image:: https://badge.fury.io/py/fauxgeo.png
     :target: http://badge.fury.io/py/fauxgeo
 
-#.. image:: https://travis-ci.org/wbierbower/fauxgeo.png?branch=master
-#        :target: https://travis-ci.org/wbierbower/fauxgeo
+.. image:: https://travis-ci.org/wbierbower/fauxgeo.png?branch=master
+        :target: https://travis-ci.org/wbierbower/fauxgeo
 
 .. image:: https://readthedocs.org/projects/fauxgeo/badge/?version=latest
         :target: https://readthedocs.org/projects/fauxgeo/?badge=latest
