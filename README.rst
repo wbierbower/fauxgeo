@@ -164,7 +164,6 @@ The Vector Class (a work in progress...)
     del vector
 
 
-
 Tests
 -----
 
