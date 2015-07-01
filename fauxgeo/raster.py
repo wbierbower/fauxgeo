@@ -769,16 +769,17 @@ class Raster(object):
         return Raster.from_tempfile(dataset_out_uri)
 
     def align_to(self, raster, resample_method):
-        '''Currently aligns other raster to this raster - later: union/intersection
+        '''Currently aligns self to provided raster - later: union/intersection
         '''
         assert(self.get_projection() == raster.get_projection())
 
         def dataset_pixel_op(x, y): return y
+
         dataset_uri_list = [raster.uri, self.uri]
         dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(raster.uri)
-        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(raster.uri)
-        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(self.uri)
+        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(self.uri)
+        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(raster.uri)
         bounding_box_mode = "dataset"
 
         pygeo.geoprocessing.vectorize_datasets(
@@ -805,19 +806,6 @@ class Raster(object):
         pixel_size = self.get_affine().a
 
         try:
-            # pygeo.geoprocessing.vectorize_datasets(
-            #     [self.uri],
-            #     lambda x: x,
-            #     dataset_out_uri,
-            #     datatype,
-            #     nodata,
-            #     pixel_size,
-            #     'intersection',
-            #     aoi_uri=aoi_uri,
-            #     assert_datasets_projected=False,  # ?
-            #     process_pool=None,
-            #     vectorize_op=False,
-            #     rasterize_layer_options=['ALL_TOUCHED=TRUE'])
             pygeo.geoprocessing.clip_dataset_uri(
                 self.uri,
                 aoi_uri,
@@ -876,22 +864,6 @@ class Raster(object):
             self.uri, pixel_size, wkt, resample_method, dataset_out_uri)
 
         return Raster.from_tempfile(dataset_out_uri)
-
-    # def reproject_georef_point(self, x, y, dst_proj):
-    #     reproj = functools.partial(
-    #         pyproj.transform,
-    #         pyproj.Proj(init="epsg:%i" % self.get_projection()),
-    #         pyproj.Proj(init="epsg:%i" % dst_proj))
-
-    #     return reproj(x, y)
-
-    # def reproject_shapely_object(self, shapely_object, dst_proj):
-    #     reproj = functools.partial(
-    #         pyproj.transform,
-    #         pyproj.Proj(init="epsg:%i" % self.get_projection()),
-    #         pyproj.Proj(init="epsg:%i" % dst_proj))
-
-    #     return shapely.ops.transform(reproj, shapely_object)
 
     def resize_pixels(self, pixel_size, resample_method):
         bounding_box = self.get_bounding_box()
