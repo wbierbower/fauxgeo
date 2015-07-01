@@ -16,10 +16,8 @@ except:
     from osgeo import osr
 
 import numpy as np
-# from affine import Affine
 from shapely.geometry import Polygon
 import shapely
-# import pyproj
 import PIL
 import pygeoprocessing as pygeo
 
@@ -807,21 +805,24 @@ class Raster(object):
         pixel_size = self.get_affine().a
 
         try:
-            pygeo.geoprocessing.vectorize_datasets(
-                [self.uri],
-                lambda x: x,
+            # pygeo.geoprocessing.vectorize_datasets(
+            #     [self.uri],
+            #     lambda x: x,
+            #     dataset_out_uri,
+            #     datatype,
+            #     nodata,
+            #     pixel_size,
+            #     'intersection',
+            #     aoi_uri=aoi_uri,
+            #     assert_datasets_projected=False,  # ?
+            #     process_pool=None,
+            #     vectorize_op=False,
+            #     rasterize_layer_options=['ALL_TOUCHED=TRUE'])
+            pygeo.geoprocessing.clip_dataset_uri(
+                self.uri,
+                aoi_uri,
                 dataset_out_uri,
-                datatype,
-                nodata,
-                pixel_size,
-                'intersection',
-                aoi_uri=aoi_uri,
-                assert_datasets_projected=False,  # ?
-                process_pool=None,
-                vectorize_op=False,
-                rasterize_layer_options=['ALL_TOUCHED=TRUE'])
-            # pygeo.geoprocessing.clip_dataset_uri(
-            #     self.uri, aoi_uri, dataset_out_uri, assert_projections=False)
+                assert_projections=False)
             return Raster.from_tempfile(dataset_out_uri)
         except:
             os.remove(dataset_out_uri)
@@ -954,7 +955,9 @@ class Raster(object):
         raise NotImplementedError
 
     def to_vector(self):
-        raise NotImplementedError
+        aoi_shapely = self.get_aoi()
+        proj = self.get_projection()
+        return Vector.from_shapely(aoi_shapely, proj)
 
     def local_op(self, raster, pixel_op_closure, broadcast=False):
         bounding_box_mode = "dataset"
