@@ -18,7 +18,7 @@ except:
 import numpy as np
 from shapely.geometry import Polygon
 import shapely
-import PIL
+# import PIL
 import pygeoprocessing as pygeo
 
 from fauxgeo.vector import Vector
@@ -356,12 +356,12 @@ class Raster(object):
     def save_raster(self, uri):
         shutil.copyfile(self.uri, uri)
 
-    def get_grayscale_image(self):
-        ma = self.get_band(1)
-        a_min = ma.min()
-        a_max = ma.max() - a_min
-        new_ma = (ma - a_min) * (255/a_max)
-        return PIL.Image.fromarray(new_ma)
+    # def get_grayscale_image(self):
+    #     ma = self.get_band(1)
+    #     a_min = ma.min()
+    #     a_max = ma.max() - a_min
+    #     new_ma = (ma - a_min) * (255/a_max)
+    #     return PIL.Image.fromarray(new_ma)
 
     def get_heatmap_image(self):
         raise NotImplementedError
