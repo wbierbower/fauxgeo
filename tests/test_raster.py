@@ -15,6 +15,7 @@ import os
 import tempfile
 
 import numpy as np
+from numpy import testing
 # from affine import Affine
 from fauxgeo.affine import Affine
 import gdal
@@ -157,17 +158,18 @@ class TestRasterReclass(unittest.TestCase):
         self.array = np.ones(self.shape)
         self.affine = Affine(1, 0, 0, 0, -1, 3)
         self.proj = 4326
-        self.datatype = gdal.GDT_Float64
+        self.datatype = gdal.GDT_Int16
         self.nodata_val = -9999
         self.factory = RasterFactory(
             self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
 
     def test_reclass(self):
-        a = self.factory.alternating(1.0, 2.0)
-        reclass_dict = {1: 3, 2: 4}
-        b = a.reclass(reclass_dict)
-        assert(b.get_band(1)[0, 0] == 3)
-        assert(b.get_band(1)[0, 1] == 4)
+        a = self.factory.alternating(1, 2)
+        reclass_dict = {1: 3.2, 2: 4.3}
+        b = a.reclass(reclass_dict, out_datatype=gdal.GDT_Float32)
+
+        testing.assert_almost_equal(b.get_band(1)[0, 0], 3.2)
+        testing.assert_almost_equal(b.get_band(1)[0, 1], 4.3, decimal=5)
 
 
 class TestRasterClip(unittest.TestCase):
