@@ -465,6 +465,23 @@ class TestRasterUnique(unittest.TestCase):
         assert(raster.unique() == [1, 2, 3, 4])
 
 
+class TestRasterToBinaryRaster(unittest.TestCase):
+    def setUp(self):
+        self.shape = (4, 4)
+        self.array = np.ones(self.shape)
+        self.affine = Affine(1, 0, 0, 0, -1, 4)
+        self.proj = 4326
+        self.datatype = gdal.GDT_Float32
+        self.nodata_val = -9999
+        self.factory = RasterFactory(
+            self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+    def test_unique(self):
+        raster = self.factory.horizontal_ramp(1, 4)
+        binary_raster = raster.to_binary_raster(4)
+        assert(binary_raster.unique() == [0, 1])
+
+
 class TestRasterSlice(unittest.TestCase):
     def setUp(self):
         self.shape = (10, 10)

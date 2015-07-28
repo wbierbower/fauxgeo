@@ -931,6 +931,15 @@ class Raster(object):
         proj = self.get_projection()
         return Vector.from_shapely(aoi_shapely, proj)
 
+    def to_binary_raster(self, val):
+        values_list = list(set(self.get_band(1).data.flatten()))
+        reclass_list = [(v, 0) for v in values_list]
+        reclass_dict = dict(reclass_list)
+        if val in values_list:
+            print val
+            reclass_dict[val] = 1
+        return self.reclass(reclass_dict)
+
     def local_op(self, raster, pixel_op_closure, broadcast=False):
         bounding_box_mode = "dataset"
         resample_method = "nearest"
