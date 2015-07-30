@@ -88,7 +88,12 @@ class Vector(object):
             os.remove(fp+ext)
 
     def __str__(self):
-        return "<vector object at " + self.uri + ">"
+        string =  '\nVector object -----'
+        string += '\nuri:' + self.uri
+        string += '\nwkt:' + self.get_geometry().__str__()
+        string += '\nprojection:' + self.get_projection_wkt()
+        string += '\n'
+        return string
 
     def __len__(self):
         return self.feature_count()
