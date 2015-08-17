@@ -3,18 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to fauxgeo's documentation!
-===============================================
+Fauxgeo API
+===========
 
-Contents:
+  .. toctree::
+     :maxdepth: 1
 
-.. toctree::
-   :maxdepth: 2
+     modules/affine.rst
+     modules/raster.rst
+     modules/vector.rst
 
-   readme
-   installation
-   usage
-   history
+.. include:: ../../README.rst
 
 Indices and tables
 ==================
@@ -22,4 +21,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
