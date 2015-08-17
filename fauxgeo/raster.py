@@ -833,8 +833,8 @@ class Raster(object):
             my1 = src_af.f
             sign_x = np.sign(src_af.a)
             sign_y = np.sign(src_af.e)
-            mx2 = (sign_x * px) + mx1
-            my2 = (sign_y * py) + my1
+            mx2 = (src_af.a * px) + mx1
+            my2 = (src_af.e * py) + my1
             affine = Affine(
                 src_af.a,
                 src_af.b,

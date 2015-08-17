@@ -16,12 +16,13 @@ import tempfile
 
 import numpy as np
 from numpy import testing
-# from affine import Affine
 from fauxgeo.affine import Affine
 import gdal
+import shapely
 
 from fauxgeo import Raster
 from fauxgeo import RasterFactory
+from fauxgeo import Vector
 
 
 class TestRasterGetAndAlign(unittest.TestCase):
@@ -174,14 +175,23 @@ class TestRasterReclass(unittest.TestCase):
 
 class TestRasterClip(unittest.TestCase):
     def setUp(self):
-        self.shape = (3, 4)
+        self.shape = (3, 3)
         self.array = np.ones(self.shape)
-        self.affine = Affine(1, 0, 0, 0, -1, 3)
+        self.affine = Affine(3, 0, 0, 0, -3, 9)
         self.proj = 4326
-        self.datatype = gdal.GDT_Float64
+        self.datatype = gdal.GDT_Float32
         self.nodata_val = -9999
         self.factory = RasterFactory(
             self.proj, self.datatype, self.nodata_val, *self.shape, affine=self.affine)
+
+        # aoi that fits within single cell
+        self.shapely_object = shapely.geometry.Polygon([(1, 1), (1, 2), (2, 2), (2, 1), (1, 1)])
+
+    def test_clip_within_cell(self):
+        r = self.factory.uniform(8.0)
+        v = Vector.from_shapely(self.shapely_object, self.proj, driver='ESRI Shapefile')
+        clipped_r = r.clip(v.uri)
+        # print clipped_r
 
 
 class TestRasterBoundingBox(unittest.TestCase):
@@ -514,6 +524,7 @@ class TestRasterSlice(unittest.TestCase):
         block[block == 1] = 0
         raster[1:3, 1:3] = block
         assert(raster[1][1] == 0)
+
 
 if __name__ == '__main__':
     unittest.main()
