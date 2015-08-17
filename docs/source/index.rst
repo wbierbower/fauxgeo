@@ -11,6 +11,7 @@ Fauxgeo API
 
      modules/affine.rst
      modules/raster.rst
+     modules/raster_factory.rst
      modules/vector.rst
 
 .. include:: ../../README.rst
