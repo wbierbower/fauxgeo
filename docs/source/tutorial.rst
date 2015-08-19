@@ -1,5 +1,5 @@
-Unit-Tests with Fauxgeo
-=======================
+Unit Testing with Fauxgeo
+=========================
 
 .. code::
 
@@ -25,7 +25,7 @@ Unit-Tests with Fauxgeo
 
     def test(self):
       # create test data
-      global_raster = global_int_factory.uniform(5)
+      global_raster = self.global_int_factory.uniform(5)
 
       # arguments for vectorize_datasets
       dataset_uri_list = [global_raster.uri]
