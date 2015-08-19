@@ -16,6 +16,15 @@ Fauxgeo API
 
 .. include:: ../../README.rst
 
+Other Useful Info
+=================
+
+  .. toctree::
+     :maxdepth: 1
+
+     tutorial.rst
+     history.rst
+
 Indices and tables
 ==================
 
