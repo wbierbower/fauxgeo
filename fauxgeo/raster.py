@@ -36,8 +36,8 @@ class Raster(object):
         self.driver = driver
         self.dataset = None
 
-    @classmethod
-    def from_array(self, array, affine, proj, datatype, nodata_val, driver='GTiff', filepath=None):
+    @staticmethod
+    def from_array(array, affine, proj, datatype, nodata_val, driver='GTiff', filepath=None):
         if len(array.shape) is 2:
             num_bands = 1
         elif len(array.shape) is 3:
