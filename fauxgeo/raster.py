@@ -742,7 +742,8 @@ class Raster(object):
     def align(self, raster, resample_method):
         '''Currently aligns other raster to this raster - later: union/intersection
         '''
-        assert(self.get_projection() == raster.get_projection())
+        if not self.get_projection() == raster.get_projection():
+            raise AssertionError("Different Projections")
 
         def dataset_pixel_op(x, y): return y
         dataset_uri_list = [self.uri, raster.uri]
@@ -771,7 +772,8 @@ class Raster(object):
     def align_to(self, raster, resample_method):
         '''Currently aligns self to provided raster - later: union/intersection
         '''
-        assert(self.get_projection() == raster.get_projection())
+        if not self.get_projection() == raster.get_projection():
+            raise AssertionError("Different Projections")
 
         def dataset_pixel_op(x, y): return y
 
@@ -945,13 +947,11 @@ class Raster(object):
         resample_method = "nearest"
 
         if not broadcast:
-            assert(self.is_aligned(raster))
-            try:
-                assert(self.get_nodata(1) == raster.get_nodata(1))
-            except AssertionError:
-                LOGGER.error("Rasters have different nodata values: %f, %f" % (
+            if not self.is_aligned(raster):
+                raise AssertionError("Not Aligned")
+            if not self.get_nodata(1) == raster.get_nodata(1):
+                raise AssertionError("Rasters have different nodata values: %f, %f" % (
                     self.get_nodata(1), raster.get_nodata(1)))
-                raise AssertionError
             dataset_uri_list = [self.uri, raster.uri]
             resample_list = [resample_method]*2
         else:
