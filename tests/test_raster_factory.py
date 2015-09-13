@@ -48,6 +48,9 @@ class TestRasterFactory(unittest.TestCase):
         del r
         assert(not os.path.exists(uri))
 
+    def test_sample_global_raster(self):
+        self.assertEqual(len(RasterFactory.create_sample_global_map()[0]), 360)
+
     def tearDown(self):
         pass
 

@@ -11,7 +11,7 @@ from fauxgeo.raster import Raster
 
 class RasterFactory(object):
 
-    def __init__(self, proj, datatype, nodata_val, rows, cols, affine=Affine.identity):
+    def __init__(self, proj, datatype, nodata_val, rows, cols, affine=Affine.identity()):
         self.proj = proj
         self.datatype = datatype
         self.nodata_val = nodata_val
@@ -66,3 +66,12 @@ class RasterFactory(object):
         a[:] = row_vals
         a = a.T
         return self._create_raster(a)
+
+    @staticmethod
+    def create_sample_global_map():
+        shape = (360, 180)
+        datatype = 5
+        nodata_val = -9999
+        proj = 4326
+        factory = RasterFactory(proj, datatype, nodata_val, shape[1], shape[0])
+        return factory.uniform(1)
