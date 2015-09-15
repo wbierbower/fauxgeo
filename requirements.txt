@@ -4,4 +4,3 @@ gdal
 pygeoprocessing
 shapely
 pillow
-natcap.versioner

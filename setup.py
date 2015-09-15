@@ -19,7 +19,6 @@ requirements = [
     "shapely",
     "pygeoprocessing",
     "wheel",
-    # "pyproj",
     "pillow"
 ]
 

@@ -1,6 +1,4 @@
-'''
-Raster Class
-'''
+"""Raster Class."""
 
 import os
 import shutil
@@ -10,7 +8,7 @@ try:
     import gdal
     import ogr
     import osr
-except:
+except ImportError:
     from osgeo import gdal
     from osgeo import ogr
     from osgeo import osr
@@ -30,7 +28,9 @@ logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s \
 
 
 class Raster(object):
-    # any global variables here
+
+    """A class for interacting with gdal raster files."""
+
     def __init__(self, uri, driver):
         self.uri = uri
         self.driver = driver
@@ -94,6 +94,12 @@ class Raster(object):
     @classmethod
     def create_simple_affine(self, top_left_x, top_left_y, pix_width, pix_height):
         return Affine(pix_width, 0, top_left_x, 0, -(pix_height), top_left_y)
+
+    def _open_dataset(self):
+        self.dataset = gdal.Open(self.uri)
+
+    def _close_dataset(self):
+        self.dataset = None
 
     def __del__(self):
         self._delete()
@@ -356,13 +362,6 @@ class Raster(object):
     def save_raster(self, uri):
         shutil.copyfile(self.uri, uri)
 
-    # def get_grayscale_image(self):
-    #     ma = self.get_band(1)
-    #     a_min = ma.min()
-    #     a_max = ma.max() - a_min
-    #     new_ma = (ma - a_min) * (255/a_max)
-    #     return PIL.Image.fromarray(new_ma)
-
     def get_heatmap_image(self):
         raise NotImplementedError
 
@@ -493,9 +492,7 @@ class Raster(object):
         return cols
 
     def get_pixel_value_at_pixel_indices(self, px, py):
-        '''
-        Position relative to origin regardless of affine transform
-        '''
+        """Position relative to origin regardless of affine transform."""
         pix = None
         self._open_dataset()
 
@@ -509,30 +506,26 @@ class Raster(object):
         return pix
 
     def get_georef_point_at_pixel_indices(self, px, py):
-        '''
-        Georeferenced point of pixel center
-        '''
+        """Georeferenced point of pixel center."""
         a = self.get_affine()
         gx = (a.a * (px + 0.5)) + (a.b * (py + 0.5)) + a.c
         gy = (a.e * (py + 0.5)) + (a.d * (px + 0.5)) + a.f
         return (gx, gy)
 
     def get_shapely_point_at_pixel_indices(self, px, py):
-        '''
-        Georeferenced point of pixel center
-        '''
+        """Georeferenced point of pixel center."""
         gx, gy = self.get_georef_point_at_pixel_indices(px, py)
         return shapely.geometry.point.Point(gx, gy)
 
     def get_pixel_indices_at_georef_point(self, gx, gy):
-        '''this may only apply to non-rotated rasters'''
+        """note: this may only apply to non-rotated rasters."""
         gt = self.get_geotransform()
         px = int((gx - gt[0]) / gt[1])
         py = int((gy - gt[3]) / gt[5])
         return (px, py)
 
     def get_pixel_indices_at_shapely_point(self, shapely_point):
-        '''this may only apply to non-rotated rasters'''
+        """note: this may only apply to non-rotated rasters."""
         return self.get_pixel_indices_at_georef_point(
             shapely_point.x, shapely_point.y)
 
@@ -583,7 +576,7 @@ class Raster(object):
         return pygeo.geoprocessing.get_bounding_box(self.uri)
 
     def get_aoi(self):
-        '''May only be suited for non-rotated rasters'''
+        """May only be suited for non-rotated rasters."""
         bb = self.get_bounding_box()
         u_x = max(bb[0::2])
         l_x = min(bb[0::2])
@@ -592,7 +585,7 @@ class Raster(object):
         return Polygon([(l_x, l_y), (l_x, u_y), (u_x, u_y), (u_x, l_y)])
 
     def get_aoi_as_shapefile(self, uri):
-        '''May only be suited for non-rotated rasters'''
+        """May only be suited for non-rotated rasters."""
         raise NotImplementedError
 
     def get_cell_area(self):
@@ -740,8 +733,7 @@ class Raster(object):
             raise TypeError
 
     def align(self, raster, resample_method):
-        '''Currently aligns other raster to this raster - later: union/intersection
-        '''
+        """Currently aligns other raster to this raster - later: union/intersection."""
         if not self.get_projection() == raster.get_projection():
             raise AssertionError("Different Projections")
 
@@ -770,8 +762,7 @@ class Raster(object):
         return Raster.from_tempfile(dataset_out_uri)
 
     def align_to(self, raster, resample_method):
-        '''Currently aligns self to provided raster - later: union/intersection
-        '''
+        """Currently aligns self to provided raster - later: union/intersection"""
         if not self.get_projection() == raster.get_projection():
             raise AssertionError("Different Projections")
 
@@ -980,9 +971,3 @@ class Raster(object):
             vectorize_op=False)
 
         return Raster.from_tempfile(dataset_out_uri)
-
-    def _open_dataset(self):
-        self.dataset = gdal.Open(self.uri)
-
-    def _close_dataset(self):
-        self.dataset = None
