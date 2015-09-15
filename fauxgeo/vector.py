@@ -1,6 +1,4 @@
-'''
-Vector Class
-'''
+"""Vector Class."""
 
 import os
 import shutil
@@ -20,7 +18,9 @@ import pygeoprocessing as pygeo
 
 
 class Vector(object):
-    # any global variables here
+
+    """A class to represent vectors."""
+
     def __init__(self, uri, driver):
         self.uri = uri
         self.driver = driver

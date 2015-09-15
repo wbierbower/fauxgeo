@@ -1,6 +1,5 @@
-'''
-RasterFactory Class
-'''
+"""RasterFactory Class."""
+
 import random
 
 import numpy as np
@@ -11,7 +10,10 @@ from fauxgeo.raster import Raster
 
 class RasterFactory(object):
 
+    """A class to generate raster objects."""
+
     def __init__(self, proj, datatype, nodata_val, rows, cols, affine=Affine.identity()):
+        """Construct RasterFactory object."""
         self.proj = proj
         self.datatype = datatype
         self.nodata_val = nodata_val
@@ -20,6 +22,7 @@ class RasterFactory(object):
         self.affine = affine
 
     def get_metadata(self):
+        """Return metadata dictionary."""
         meta = {}
         meta['proj'] = self.proj
         meta['datatype'] = self.datatype
@@ -34,16 +37,19 @@ class RasterFactory(object):
             array, self.affine, self.proj, self.datatype, self.nodata_val)
 
     def uniform(self, val):
+        """Return raster filled with uniform values."""
         a = np.ones((self.rows, self.cols)) * val
         return self._create_raster(a)
 
     def alternating(self, val1, val2):
+        """Return raster filled with alternating values."""
         a = np.ones((self.rows, self.cols)) * val2
         a[::2, ::2] = val1
         a[1::2, 1::2] = val1
         return self._create_raster(a)
 
     def random(self):
+        """Return raster filled with random values."""
         a = np.random.rand(self.rows, self.cols)
         return self._create_raster(a)
 
@@ -69,6 +75,7 @@ class RasterFactory(object):
 
     @staticmethod
     def create_sample_global_map():
+        """Return a simple global map."""
         shape = (360, 180)
         datatype = 5
         nodata_val = -9999
