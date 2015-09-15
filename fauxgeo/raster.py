@@ -31,13 +31,14 @@ class Raster(object):
 
     """A class for interacting with gdal raster files."""
 
-    def __init__(self, uri, driver):
+    def __init__(self, uri, driver, resample_method=None):
         self.uri = uri
         self.driver = driver
         self.dataset = None
+        self.resample_method = resample_method
 
     @staticmethod
-    def from_array(array, affine, proj, datatype, nodata_val, driver='GTiff', filepath=None):
+    def from_array(array, affine, proj, datatype, nodata_val, resample_method=None, driver='GTiff', filepath=None):
         if len(array.shape) is 2:
             num_bands = 1
         elif len(array.shape) is 3:
@@ -74,25 +75,25 @@ class Raster(object):
         driver = None
 
         if not filepath:
-            return Raster(dataset_uri, driver=driver)
+            return Raster(dataset_uri, resample_method=resample_method, driver=driver)
 
-    @classmethod
-    def from_file(self, uri, driver='GTiff'):
+    @staticmethod
+    def from_file(uri, resample_method=None, driver='GTiff'):
         dataset_uri = pygeo.geoprocessing.temporary_filename()
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         # assert existence
         shutil.copyfile(uri, dataset_uri)
-        return Raster(dataset_uri, driver)
+        return Raster(dataset_uri, driver, resample_method=resample_method)
 
-    @classmethod
-    def from_tempfile(self, uri, driver='GTiff'):
+    @staticmethod
+    def from_tempfile(uri, driver='GTiff'):
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         return Raster(uri, driver)
 
-    @classmethod
-    def create_simple_affine(self, top_left_x, top_left_y, pix_width, pix_height):
+    @staticmethod
+    def create_simple_affine(top_left_x, top_left_y, pix_width, pix_height):
         return Affine(pix_width, 0, top_left_x, 0, -(pix_height), top_left_y)
 
     def _open_dataset(self):
