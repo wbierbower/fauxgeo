@@ -1,7 +1,7 @@
-Affine Module
-=============
+Affine Class
+============
 
-.. automodule:: fauxgeo.affine
+.. autoclass:: fauxgeo.Affine
     :members:
     :undoc-members:
     :show-inheritance:

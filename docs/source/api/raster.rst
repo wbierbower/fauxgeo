@@ -1,7 +1,7 @@
-Raster Module
-=============
+Raster Class
+============
 
-.. automodule:: fauxgeo.raster
+.. autoclass:: fauxgeo.Raster
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,5 +1,5 @@
-Unit Testing with Fauxgeo
-=========================
+Creating Rasters for Unittests
+==============================
 
 .. code::
 

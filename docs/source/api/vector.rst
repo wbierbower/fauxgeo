@@ -1,7 +1,7 @@
-Vector Module
-=============
+Vector Class
+============
 
-.. automodule:: fauxgeo.vector
+.. autoclass:: fauxgeo.Vector
     :members:
     :undoc-members:
     :show-inheritance:

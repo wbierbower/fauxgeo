@@ -1,29 +1,25 @@
-.. fauxgeo documentation master file, created by
-   sphinx-quickstart on Tue Jul  9 22:26:36 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+=====================
+Fauxgeo Documentation
+=====================
 
-Fauxgeo API
-===========
+**Features:**
 
-  .. toctree::
-     :maxdepth: 1
+- Raster class
+- RasterStack class
+- RasterFactory class
+- Affine class
 
-     modules/affine.rst
-     modules/raster.rst
-     modules/raster_factory.rst
-     modules/vector.rst
-
-.. include:: ../../README.rst
-
-Other Useful Info
-=================
+Documentation
+=============
 
   .. toctree::
-     :maxdepth: 1
+     :maxdepth: 2
 
-     tutorial.rst
+     api/api.rst
+     design/design.rst
+     tutorials/tutorials.rst
      history.rst
+
 
 Indices and tables
 ==================
