@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-test_rasterfactory
+test_raster_factory
 ----------------------------------
 
 Tests for RasterFactory class.
@@ -13,7 +13,6 @@ import os
 import tempfile
 
 import numpy as np
-# from affine import Affine
 from fauxgeo.affine import Affine
 import gdal
 

@@ -56,7 +56,7 @@ The Raster Class
     nodata_val = -9999.0
 
     # initialize raster
-    raster = Raster.from_array(array, affine, proj, datatype, nodata_val)   
+    raster = Raster.from_array(array, affine, proj, datatype, nodata_val)
     raster = Raster.from_file('path/to/geotiff')
 
     raster.uri  # equals '/path/to/geotiff'
@@ -75,7 +75,7 @@ The Raster Class
     raster2 = raster1.set_datatype(gdal.GDT_Int32)
     raster2 = raster1.set_nodata(-9999)
     raster2 = raster1.set_datatype_and_nodata(gdal.GDT_Int32, -9999)
-    
+
     # Operations
     raster3 = raster1.align(raster2)
     raster3 = raster1.align_to(raster2)
@@ -100,7 +100,7 @@ The Raster Class
     raster4 = raster3.minimum(raster2)
 
     # returns base rasters with same nodata and datatype
-    zeros_raster = raster3.zeros()  
+    zeros_raster = raster3.zeros()
     ones_raster = raster3.ones()
 
     raster4 = raster3.clip('/path/to/aoi_shapefile')
@@ -167,7 +167,7 @@ Tests
 -----
 
 .. code::
-    
+
     python setup.py test
 
 Planning

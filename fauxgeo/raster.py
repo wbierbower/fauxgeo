@@ -16,7 +16,6 @@ except ImportError:
 import numpy as np
 from shapely.geometry import Polygon
 import shapely
-# import PIL
 import pygeoprocessing as pygeo
 
 from fauxgeo.vector import Vector
