@@ -27,17 +27,14 @@ class Affine(object):
         d = (self.d == other.d)
         e = (self.e == other.e)
         f = (self.f == other.f)
-        if all([a, b, c, d, e, f]):
-            return True
-        else:
-            return False
+        return all([a, b, c, d, e, f])
 
     @classmethod
     def identity(self):
         """Return identify transform."""
         return Affine(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 
-    @ classmethod
+    @classmethod
     def from_gdal(self, c, a, b, f, d, e):
         """Convert from a gdal geotransform."""
         return Affine(a, b, c, d, e, f)

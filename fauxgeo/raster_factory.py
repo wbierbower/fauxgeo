@@ -80,5 +80,6 @@ class RasterFactory(object):
         datatype = 5
         nodata_val = -9999
         proj = 4326
-        factory = RasterFactory(proj, datatype, nodata_val, shape[1], shape[0])
+        factory = RasterFactory(
+            proj, datatype, nodata_val, shape[1], shape[0])
         return factory.uniform(1)

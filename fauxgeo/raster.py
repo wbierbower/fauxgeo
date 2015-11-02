@@ -17,6 +17,7 @@ import numpy as np
 from shapely.geometry import Polygon
 import shapely
 import pygeoprocessing as pygeo
+import pygeoprocessing.geoprocessing as geoprocess
 
 from fauxgeo.vector import Vector
 from fauxgeo.affine import Affine
@@ -48,7 +49,7 @@ class Raster(object):
         if filepath:
             dataset_uri = filepath
         else:
-            dataset_uri = pygeo.geoprocessing.temporary_filename()
+            dataset_uri = geoprocess.temporary_filename()
         rows = array.shape[0]
         cols = array.shape[1]
 
@@ -74,11 +75,12 @@ class Raster(object):
         driver = None
 
         if not filepath:
-            return Raster(dataset_uri, resample_method=resample_method, driver=driver)
+            return Raster(
+                dataset_uri, resample_method=resample_method, driver=driver)
 
     @staticmethod
     def from_file(uri, resample_method=None, driver='GTiff'):
-        dataset_uri = pygeo.geoprocessing.temporary_filename()
+        dataset_uri = geoprocess.temporary_filename()
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         # assert existence
@@ -111,7 +113,7 @@ class Raster(object):
         os.remove(self.uri)
 
     def __str__(self):
-        string = '\nRASTER'
+        string = '\nRASTER___'
         string += '\nNumber of Bands: ' + str(self.band_count())
         string += '\nBand 1:\n' + self.get_band(1).__repr__()
         string += self.get_affine().__repr__()
@@ -451,6 +453,13 @@ class Raster(object):
         self._close_dataset()
         return a
 
+    def get_resample_method(self):
+        if not self.resample_method:
+            raise AttributeError(
+                'Raster object has no assigned resample_method attribute')
+        else:
+            return self.resample_method
+
     def get_nodata(self, band_num):
         nodata_val = None
         self._open_dataset()
@@ -573,7 +582,7 @@ class Raster(object):
         return Affine.from_gdal(*geotransform)
 
     def get_bounding_box(self):
-        return pygeo.geoprocessing.get_bounding_box(self.uri)
+        return geoprocess.get_bounding_box(self.uri)
 
     def get_aoi(self):
         """May only be suited for non-rotated rasters."""
@@ -623,12 +632,12 @@ class Raster(object):
 
         nodata = self.get_nodata(1)
         pixel_op = pixel_op_closure(nodata)
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        dataset_out_uri = geoprocess.temporary_filename()
         datatype_out = datatype
         nodata_out = nodata
-        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+        pixel_size_out = geoprocess.get_cell_size_from_uri(self.uri)
 
-        pygeo.geoprocessing.vectorize_datasets(
+        geoprocess.vectorize_datasets(
             dataset_uri_list,
             pixel_op,
             dataset_out_uri,
@@ -659,12 +668,12 @@ class Raster(object):
 
         old_nodata = self.get_nodata(1)
         pixel_op = pixel_op_closure(old_nodata, nodata_val)
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(self.uri)
+        dataset_out_uri = geoprocess.temporary_filename()
+        datatype_out = geoprocess.get_datatype_from_uri(self.uri)
         nodata_out = nodata_val
-        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+        pixel_size_out = geoprocess.get_cell_size_from_uri(self.uri)
 
-        pygeo.geoprocessing.vectorize_datasets(
+        geoprocess.vectorize_datasets(
             dataset_uri_list,
             pixel_op,
             dataset_out_uri,
@@ -695,12 +704,12 @@ class Raster(object):
 
         old_nodata = self.get_nodata(1)
         pixel_op = pixel_op_closure(old_nodata, nodata_val)
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        dataset_out_uri = geoprocess.temporary_filename()
         datatype_out = datatype
         nodata_out = nodata_val
-        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+        pixel_size_out = geoprocess.get_cell_size_from_uri(self.uri)
 
-        pygeo.geoprocessing.vectorize_datasets(
+        geoprocess.vectorize_datasets(
             dataset_uri_list,
             pixel_op,
             dataset_out_uri,
@@ -718,7 +727,7 @@ class Raster(object):
 
     def copy(self, uri=None):
         if not uri:
-            uri = pygeo.geoprocessing.temporary_filename()
+            uri = geoprocess.temporary_filename()
         if not os.path.isabs(uri):
             uri = os.path.join(os.getcwd(), uri)
         shutil.copyfile(self.uri, uri)
@@ -739,13 +748,13 @@ class Raster(object):
 
         def dataset_pixel_op(x, y): return y
         dataset_uri_list = [self.uri, raster.uri]
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(raster.uri)
-        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(raster.uri)
-        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+        dataset_out_uri = geoprocess.temporary_filename()
+        datatype_out = geoprocess.get_datatype_from_uri(raster.uri)
+        nodata_out = geoprocess.get_nodata_from_uri(raster.uri)
+        pixel_size_out = geoprocess.get_cell_size_from_uri(self.uri)
         bounding_box_mode = "dataset"
 
-        pygeo.geoprocessing.vectorize_datasets(
+        geoprocess.vectorize_datasets(
             dataset_uri_list,
             dataset_pixel_op,
             dataset_out_uri,
@@ -769,13 +778,13 @@ class Raster(object):
         def dataset_pixel_op(x, y): return y
 
         dataset_uri_list = [raster.uri, self.uri]
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(self.uri)
-        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(self.uri)
-        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(raster.uri)
+        dataset_out_uri = geoprocess.temporary_filename()
+        datatype_out = geoprocess.get_datatype_from_uri(self.uri)
+        nodata_out = geoprocess.get_nodata_from_uri(self.uri)
+        pixel_size_out = geoprocess.get_cell_size_from_uri(raster.uri)
         bounding_box_mode = "dataset"
 
-        pygeo.geoprocessing.vectorize_datasets(
+        geoprocess.vectorize_datasets(
             dataset_uri_list,
             dataset_pixel_op,
             dataset_out_uri,
@@ -793,13 +802,13 @@ class Raster(object):
 
     def clip(self, aoi_uri):
         r = None
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        dataset_out_uri = geoprocess.temporary_filename()
         datatype = self.get_datatype(1)
         nodata = self.get_nodata(1)
         pixel_size = self.get_affine().a
 
         try:
-            pygeo.geoprocessing.clip_dataset_uri(
+            geoprocess.clip_dataset_uri(
                 self.uri,
                 aoi_uri,
                 dataset_out_uri,
@@ -848,21 +857,21 @@ class Raster(object):
         if pixel_size is None:
             pixel_size = self.get_affine().a
 
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+        dataset_out_uri = geoprocess.temporary_filename()
         srs = osr.SpatialReference()
         srs.ImportFromEPSG(proj)
         wkt = srs.ExportToWkt()
 
-        pygeo.geoprocessing.reproject_dataset_uri(
+        geoprocess.reproject_dataset_uri(
             self.uri, pixel_size, wkt, resample_method, dataset_out_uri)
 
         return Raster.from_tempfile(dataset_out_uri)
 
     def resize_pixels(self, pixel_size, resample_method):
         bounding_box = self.get_bounding_box()
-        output_uri = pygeo.geoprocessing.temporary_filename()
+        output_uri = geoprocess.temporary_filename()
 
-        pygeo.geoprocessing.resize_and_resample_dataset_uri(
+        geoprocess.resize_and_resample_dataset_uri(
             self.uri,
             bounding_box,
             pixel_size,
@@ -901,12 +910,12 @@ class Raster(object):
 
     def reclass(self, reclass_table, out_nodata=None, out_datatype=None):
         if out_nodata is None:
-            out_nodata = pygeo.geoprocessing.get_nodata_from_uri(self.uri)
+            out_nodata = geoprocess.get_nodata_from_uri(self.uri)
         if out_datatype is None:
-            out_datatype = pygeo.geoprocessing.get_datatype_from_uri(self.uri)
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
+            out_datatype = geoprocess.get_datatype_from_uri(self.uri)
+        dataset_out_uri = geoprocess.temporary_filename()
 
-        pygeo.geoprocessing.reclassify_dataset_uri(
+        geoprocess.reclassify_dataset_uri(
             self.uri,
             reclass_table,
             dataset_out_uri,
@@ -951,12 +960,12 @@ class Raster(object):
 
         nodata = self.get_nodata(1)
         pixel_op = pixel_op_closure(nodata)
-        dataset_out_uri = pygeo.geoprocessing.temporary_filename()
-        datatype_out = pygeo.geoprocessing.get_datatype_from_uri(self.uri)
-        nodata_out = pygeo.geoprocessing.get_nodata_from_uri(self.uri)
-        pixel_size_out = pygeo.geoprocessing.get_cell_size_from_uri(self.uri)
+        dataset_out_uri = geoprocess.temporary_filename()
+        datatype_out = geoprocess.get_datatype_from_uri(self.uri)
+        nodata_out = geoprocess.get_nodata_from_uri(self.uri)
+        pixel_size_out = geoprocess.get_cell_size_from_uri(self.uri)
 
-        pygeo.geoprocessing.vectorize_datasets(
+        geoprocess.vectorize_datasets(
             dataset_uri_list,
             pixel_op,
             dataset_out_uri,
