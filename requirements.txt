@@ -1,6 +1,7 @@
 wheel
 numpy
-gdal<2
+gdal==1.11.0
+numpy
 shapely
 nose
 coverage

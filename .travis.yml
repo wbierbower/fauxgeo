@@ -1,8 +1,11 @@
 language: python
+os:
+  - linux
+  - osx
 python:
   - "2.7"
   - "3.5"
 # command to install dependencies
-install: "python setup.py install"
+install: install: pip install --user -r requirements.txt
 # command to run tests
-script: "python setup.py test"
+script: python setup.py test
