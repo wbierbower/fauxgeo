@@ -1,5 +1,6 @@
 wheel
 numpy
-gdal
+gdal<2
 shapely
-pillow
+nose
+coverage

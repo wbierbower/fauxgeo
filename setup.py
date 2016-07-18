@@ -7,57 +7,36 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# import multiprocessing
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
 
-requirements = [
-    # TODO: put package requirements here
-    "numpy",
-    "gdal",
-    "shapely",
-    "pygeoprocessing",
-    "wheel",
-    "pillow"
-]
-
-test_requirements = [
-    # TODO: put package test requirements here
-    "numpy",
-    "gdal",
-    "shapely",
-    "pygeoprocessing",
-    "wheel",
-    "pillow",
-    "nose",
-    "coverage"
-]
 
 setup(
     name='fauxgeo',
     version='dev',
-    description='A python library that generates fake geospatial data',
-    long_description=readme + '\n\n' + history,
-    author='Will B',
+    description='programmatically generate geospatial rasters for testing',
+    author='Will Bierbower',
     author_email='wbierbower@gmail.com',
     url='https://github.com/wbierbower/fauxgeo',
     packages=find_packages(),
-    install_requires=requirements,
+    install_requires=required,
     license="BSD",
     zip_safe=False,
     keywords='fauxgeo',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Education',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python',
+        'Topic :: Scientific/Engineering :: Mathematics',
+        'Operating System :: MacOS',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
     ],
-    test_suite='tests',
-    extras_require={
-        'tests': test_requirements
-    }
+    test_suite='tests'
 )

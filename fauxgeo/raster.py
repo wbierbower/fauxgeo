@@ -4,20 +4,11 @@ import os
 import shutil
 import logging
 
-try:
-    import gdal
-    import ogr
-    import osr
-except ImportError:
-    from osgeo import gdal
-    from osgeo import ogr
-    from osgeo import osr
-
+import gdal
+import osr
 import numpy as np
-from shapely.geometry import Polygon
 import shapely
 
-from fauxgeo.vector import Vector
 from fauxgeo.affine import Affine
 
 
@@ -355,7 +346,7 @@ class Raster(object):
         l_x = min(bb[0::2])
         u_y = max(bb[1::2])
         l_y = min(bb[1::2])
-        return Polygon([(l_x, l_y), (l_x, u_y), (u_x, u_y), (u_x, l_y)])
+        return shapely.Polygon([(l_x, l_y), (l_x, u_y), (u_x, u_y), (u_x, l_y)])
 
     def get_aoi_as_shapefile(self, uri):
         pass

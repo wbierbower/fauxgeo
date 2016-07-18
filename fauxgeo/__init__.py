@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from raster import *
-from raster_factory import *
-from raster_stack import *
-from vector import *
-from affine import *
+from .raster import Raster
+from .raster_factory import RasterFactory
+from .affine import Affine
 
 __version__ = 'dev'
