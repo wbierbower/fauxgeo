@@ -1,6 +1,5 @@
-wheel==0.23.0
+wheel
 numpy
 gdal
-pygeoprocessing
 shapely
 pillow
