@@ -1,7 +1,0 @@
-
-+ Filled out cookiecutter
-+ Added dependencies to setup.py and requirements.txt
-+ Added first test case
-+ PyPI - python setup.py register (must have a pypi account)
-+ Registered repository on TravisCI  - easy with github  - potential issues with GDAL, PyQT?
-+ 
