@@ -13,6 +13,9 @@ help:
 	@echo "release - package and upload a release"
 	@echo "dist - package"
 
+init:
+	pip install -r requirements.txt
+
 clean: clean-build clean-pyc clean-test
 
 clean-build:
@@ -55,8 +58,10 @@ docs:
 	open docs/_build/html/index.html
 
 release: clean
+	python setup.py register
 	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py bdist_wheel --universal upload
+	rm -fr build dist .egg fauxgeo.egg-info
 
 dist: clean
 	python setup.py sdist
