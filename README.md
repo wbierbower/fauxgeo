@@ -1,4 +1,4 @@
-# FauxGeo: programmatically generate geospatial rasters for testing
+# FauxGeo: generate simple geospatial rasters
 
 FauxGeo is a python library that generates simple OSGeo-supported rasters.  The primary purpose for this library is to help test geoprocessing functions.
 
