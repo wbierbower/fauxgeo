@@ -1,9 +1,12 @@
 language: python
 os:
   - linux
-  # - osx
+branches:
+  only:
+  - master
+  - stable
 python:
-  # - "2.7"
+  - "2.7"
   - "3.5"
 # command to install dependencies
 install: "python setup.py install"
