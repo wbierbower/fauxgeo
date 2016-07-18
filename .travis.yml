@@ -1,9 +1,9 @@
 language: python
 os:
-  - linux
+  # - linux
   - osx
 python:
-  - "2.7"
+  # - "2.7"
   - "3.5"
 # command to install dependencies
 install: "pip install --user -r requirements.txt"
