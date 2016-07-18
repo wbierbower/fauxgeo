@@ -2,7 +2,6 @@
 
 import random
 
-import gdal
 import numpy as np
 
 from fauxgeo.affine import Affine
@@ -86,7 +85,7 @@ class RasterFactory(object):
         return factory.uniform(1)
 
     @staticmethod
-    def create_sample_aoi_map(datatype=gdal.GDT_Float32):
+    def create_sample_aoi_map(datatype=0):
         """Return a simple global map."""
         shape = (10, 10)
         nodata_val = -9999

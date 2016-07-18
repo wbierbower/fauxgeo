@@ -11,7 +11,6 @@ import tempfile
 
 import numpy as np
 from numpy import testing
-import gdal
 import shapely
 
 from fauxgeo import Affine
