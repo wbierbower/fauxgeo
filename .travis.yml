@@ -6,8 +6,8 @@ branches:
   - master
   - stable
 python:
-  - "2.7"
   - "3.5"
+before_install: "apt-get install -y python3-gdal"
 # command to install dependencies
 install: "python setup.py install"
 # command to run tests

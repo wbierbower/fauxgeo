@@ -1,5 +1,5 @@
 wheel
 numpy
-shapely
+gdal
 nose
 coverage
