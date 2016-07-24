@@ -6,9 +6,12 @@ branches:
   - master
   - stable
 python:
-  - "2.7"
   - "3.5"
+before_install:
+  - "pip3 install conda"
+  - "conda create -y --name test_env python=3.5 nose gdal"
+  - "source activate test_env"
 # command to install dependencies
-install: "python setup.py install"
+install: "python3 setup.py install"
 # command to run tests
-script: "python setup.py test"
+script: "python3 setup.py test"

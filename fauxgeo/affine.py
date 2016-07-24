@@ -1,4 +1,5 @@
-"""Affine Class."""
+# -*- coding: utf-8 -*-
+"""Affine Class"""
 
 class Affine(object):
 

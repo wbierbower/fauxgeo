@@ -7,17 +7,18 @@ FauxGeo is a python library that generates simple OSGeo-supported rasters.  The 
 
 ## Features
 
-Available Generator Functions
+Available Signal Functions
 
-| Generator Function | RasterFactory Method     |
+| Signal Function | RasterFactory Method     |
 | :------------- | :------------- |
 | uniform      | `.uniform(val)`      |
-| ramp | `.ramp(low, high, period)` |
+| ramp | `.ramp(zero_index, slope=1)` |
 | saw tooth | `.saw(low, high, period)` |
 | triangle | `.triangle(low, high, period)` |
 | step | `.step(low, high, period)` |
 | random range | `.random(low, high)` |
-| random from collection | `.random(collection)` |
+| random from list | `.random(list)` |
+| alternating | `.alternate(val1, val2)` |
 
 ## Installation
 
@@ -34,7 +35,7 @@ import numpy as np
 from fauxgeo import RasterFactory, Affine
 
 options = {
-  'affine': Affine.simple(),
+  'affine': Affine.identity(),
   'epsg': 4326,
   'datatype': np.float32,
   'nodata': -9999,

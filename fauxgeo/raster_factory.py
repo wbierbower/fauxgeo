@@ -1,95 +1,156 @@
-"""RasterFactory Class."""
+# -*- coding: utf-8 -*-
+"""RasterFactory Class"""
 
+import copy
 import random
+import pprint as pp
 
 import numpy as np
+import gdal
+import osr
 
 from fauxgeo.affine import Affine
-from fauxgeo.raster import Raster
+
+dtype_mapping = {
+    None: 0,
+    np.uint8: 1,
+    np.uint16: 2,
+    np.int16: 3,
+    np.uint32: 4,
+    np.int32: 5,
+    np.float32: 6,
+    np.float64: 7,
+    np.complex64: 10,
+    np.complex128: 11
+}
 
 
 class RasterFactory(object):
 
-    """A class to generate raster objects."""
+    """A class to generate rasters."""
 
-    def __init__(self, proj, datatype, nodata_val, rows, cols, affine=Affine.identity()):
+    def __init__(self, epsg, datatype, nodata, shape, driver='GTIFF', affine=Affine.identity()):
         """Construct RasterFactory object."""
-        self.proj = proj
+        self.epsg = epsg
         self.datatype = datatype
-        self.nodata_val = nodata_val
-        self.rows = rows
-        self.cols = cols
+        self.nodata = nodata
+        self.shape = shape
+        self.driver = driver
         self.affine = affine
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return pp.pformat(self.get_metadata()).__str__()
 
     def get_metadata(self):
         """Return metadata dictionary."""
         meta = {}
-        meta['proj'] = self.proj
+        meta['epsg'] = self.epsg
         meta['datatype'] = self.datatype
-        meta['nodata_val'] = self.nodata_val
-        meta['rows'] = self.rows
-        meta['cols'] = self.cols
+        meta['nodata'] = self.nodata
+        meta['shape'] = self.shape
+        meta['driver'] = self.driver
         meta['affine'] = self.affine
         return meta
 
-    def _create_raster(self, array):
-        return Raster.from_array(
-            array, self.affine, self.proj, self.datatype, self.nodata_val)
-
     def uniform(self, val):
-        """Return raster filled with uniform values."""
-        a = np.ones((self.rows, self.cols)) * val
-        return self._create_raster(a)
+        def func():
+            return np.ones(self.shape).astype(self.datatype) * val
+        new = copy.deepcopy(self)
+        new.create_array = func
+        return new
 
-    def alternating(self, val1, val2):
-        """Return raster filled with alternating values."""
-        a = np.ones((self.rows, self.cols)) * val2
-        a[::2, ::2] = val1
-        a[1::2, 1::2] = val1
-        return self._create_raster(a)
+    def ramp(self, zero_index, slope=1):
+        def func():
+            high = self.shape[1] - zero_index
+            low = -zero_index
+            a = np.arange(low, high) * slope
+            a[:zero_index] = 0
+            return np.tile(a, (self.shape[0], 1)).astype(self.datatype)
+        new = copy.deepcopy(self)
+        new.create_array = func
+        return new
 
-    def random(self):
-        """Return raster filled with random values."""
-        a = np.random.rand(self.rows, self.cols)
-        return self._create_raster(a)
+    def saw(self, low, high, period):
+        def func():
+            a = np.linspace(low, high, period)
+            repeat_cols = int(np.ceil(self.shape[1] / period))
+            subarray = np.linspace(low, high, period)
+            return np.tile(subarray, (self.shape[0], repeat_cols)).astype(
+                self.datatype) [:, :self.shape[1]]
+        new = copy.deepcopy(self)
+        new.create_array = func
+        return new
 
-    def random_from_list(self, l):
-        a = np.zeros((self.rows, self.cols))
-        for i in xrange(len(a)):
-            for j in xrange(len(a[0])):
-                a[i, j] = random.choice(l)
-        return self._create_raster(a)
+    def triangle(self, low, high, period):
+        def func():
+            repeat_cols = int(np.ceil(self.shape[1] / period))
+            if period % 2 == 0:
+                subarray_left = np.linspace(low, high, np.ceil(period/2.)+1)
+                subarray_right = np.array(list(reversed(subarray_left)))
+                subarray = np.append(subarray_left[:-1], subarray_right[:-1])
+            else:
+                subarray_left = np.linspace(low, high, np.ceil(period/2.))
+                subarray_right = np.array(list(reversed(subarray_left)))
+                subarray = np.append(subarray_left[:-1], subarray_right)
+            return np.tile(subarray, (self.shape[0], repeat_cols)).astype(self.datatype)[:, :self.shape[1]]
+        new = copy.deepcopy(self)
+        new.create_array = func
+        return new
 
-    def horizontal_ramp(self, val1, val2):
-        a = np.zeros((self.rows, self.cols))
-        col_vals = np.linspace(val1, val2, self.cols)
-        a[:] = col_vals
-        return self._create_raster(a)
+    def step(self, low, high, period):
+        def func():
+            repeat_cols = int(np.ceil(self.shape[1] / period))
+            low_subarray = np.ones(int(np.ceil(period/2.))) * low
+            if period % 2 == 0:
+                high_subarray = np.ones(int(np.ceil(period/2.))) * high
+                subarray = np.append(low_subarray, high_subarray)
+            else:
+                high_subarray = np.ones(int(np.floor(period/2.))) * high
+                subarray = np.append(low_subarray, high_subarray)
+            return np.tile(subarray, (self.shape[0], repeat_cols)).astype(self.datatype)[:, :self.shape[1]]
+        new = copy.deepcopy(self)
+        new.create_array = func
+        return new
 
-    def vertical_ramp(self, val1, val2):
-        a = np.zeros((self.cols, self.rows))
-        row_vals = np.linspace(val1, val2, self.rows)
-        a[:] = row_vals
-        a = a.T
-        return self._create_raster(a)
+    def random(self, *args):
+        def func():
+            if len(args) == 1 and type(args[0]) ==  list:
+                return np.random.choice(args[0], self.shape)
+            else:
+                a = np.random.rand(*self.shape) * (args[1] - args[0]) + args[0]
+                return a.astype(self.datatype)
+        new = copy.deepcopy(self)
+        new.create_array = func
+        return new
 
-    @staticmethod
-    def create_sample_global_map():
-        """Return a simple global map."""
-        shape = (360, 180)
-        datatype = 5
-        nodata_val = -9999
-        proj = 4326
-        factory = RasterFactory(
-            proj, datatype, nodata_val, shape[1], shape[0])
-        return factory.uniform(1)
+    def alternate(self, val1, val2):
+        def func():
+            a = np.ones(self.shape) * val2
+            a[::2, ::2] = val1
+            a[1::2, 1::2] = val1
+            return a
+        new = copy.deepcopy(self)
+        new.create_array = func
+        return new
 
-    @staticmethod
-    def create_sample_aoi_map(datatype=0):
-        """Return a simple global map."""
-        shape = (10, 10)
-        nodata_val = -9999
-        proj = 32618
-        factory = RasterFactory(
-            proj, datatype, nodata_val, shape[1], shape[0])
-        return factory.horizontal_ramp(1, 10)
+    def to_file(self, filepath):
+        num_bands = 1
+        datatype = dtype_mapping[self.datatype]
+        driver = gdal.GetDriverByName(self.driver)
+        dataset = driver.Create(
+            filepath, self.shape[1], self.shape[0], num_bands, datatype)
+        dataset.SetGeoTransform((self.affine.to_gdal()))
+
+        band = dataset.GetRasterBand(1)
+        band.SetNoDataValue(self.nodata)
+        band.WriteArray(self.create_array())
+        dataset_srs = osr.SpatialReference()
+        dataset_srs.ImportFromEPSG(self.epsg)
+        dataset.SetProjection(dataset_srs.ExportToWkt())
+
+        band.FlushCache()
+        band = dataset_srs = dataset = driver = None
+        return True
