@@ -44,7 +44,7 @@ options = {
 }
 
 factory = RasterFactory(**options)
-factory.ramp(0, 10, 5).to_file('path/to/file')
+factory.uniform(5).to_file('path/to/file')
 ```
 
 ## Tests
