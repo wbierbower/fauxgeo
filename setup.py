@@ -14,7 +14,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='fauxgeo',
-    version='dev',
+    version='0.3.0',
     description='programmatically generate geospatial rasters for testing',
     author='Will Bierbower',
     author_email='wbierbower@gmail.com',
